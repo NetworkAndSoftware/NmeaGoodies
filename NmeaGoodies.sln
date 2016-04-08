@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nmea0183", "Nmea0183\Nmea0183.csproj", "{FB60EE22-3E95-4AB0-B1FE-06EF70EE4042}"
 EndProject
@@ -10,6 +10,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Experiment2", "Experiment2\Experiment2.csproj", "{6FF428E0-D0B7-48CB-A00D-EE8A02351A4E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NmeaComposer", "NmeaComposer\NmeaComposer.csproj", "{E12DD2D4-69F7-476C-B746-A0B59CE3DE85}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{EBD27043-6B5E-4309-8A18-FC0A4659226E}"
+	ProjectSection(SolutionItems) = preProject
+		doc\001notes.pdf = doc\001notes.pdf
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
