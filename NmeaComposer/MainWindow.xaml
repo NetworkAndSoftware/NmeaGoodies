@@ -1,0 +1,45 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewModels="clr-namespace:NmeaComposer.ViewModels" 
+        x:Class="NmeaComposer.MainWindow"
+        Title="NmeaComposer" Height="388" Width="651"  ResizeMode="NoResize" SizeToContent="WidthAndHeight"  >
+    <Window.DataContext>
+        <viewModels:MainViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <WrapPanel Grid.Row="0">
+            <Label Content="Talker Id:"/>
+            <TextBox Text="{Binding TalkerId, Mode=TwoWay}" TextChanged="TextBox_TextChanged"/>
+        </WrapPanel>
+        <TabControl Grid.Row="1" >
+            <TabItem Header="Basic">
+                <WrapPanel>
+                    <Label Content="Command: $"/>
+                    <TextBox ToolTip="Command Name" MinWidth="32px"   Text="{Binding Basic.CommandName, Mode=TwoWay}" TextChanged="TextBox_TextChanged"/>
+                    <TextBlock><Run Text=","/></TextBlock>
+                    <TextBox ToolTip="Command Body" MinWidth="128px" Text="{Binding Basic.CommandBody, Mode=TwoWay}" TextChanged="TextBox_TextChanged" />
+                </WrapPanel>
+
+            </TabItem>
+            <TabItem Header="APB">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
+        <StackPanel Grid.Row="2" >
+            <WrapPanel >
+                <Label Content="Complete command:"/>
+                <Label Name="CompleteCommand" Content="{Binding CompleteCommand, Mode=OneWay}"/>
+            </WrapPanel>
+            <WrapPanel>
+                <CheckBox IsChecked="{Binding KeepSending, Mode=OneWayToSource}" Content="Send periodically"/>
+            </WrapPanel>
+        </StackPanel>
+    </Grid>
+</Window>
+

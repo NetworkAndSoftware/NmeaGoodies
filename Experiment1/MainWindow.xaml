@@ -1,0 +1,63 @@
+﻿
+    
+    <Window x:Class="Experiment1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:experiment1="clr-namespace:Experiment1"
+        Title="Experiment 1" Width="674" FontSize="24" DataContext="{Binding RelativeSource={RelativeSource Self}}"  Height="277" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+    <Window.Resources>
+        <experiment1:EnumMatchToBooleanConverter x:Key="EnumConverter" />
+    </Window.Resources> 
+        
+    <Grid Margin="16" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="39"/>
+            <ColumnDefinition Width="218"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Label Grid.Column="0" Grid.Row="0">BOD</Label>
+        <TextBox Grid.Column="1" Grid.Row="0" Width="80" Text="{Binding ElementName=SlideBOD,Path=Value, StringFormat=0.0}" Margin="0,0,1,0"/>
+        <Slider Grid.Column="2" Grid.Row="0" Maximum="359" SmallChange="1" LargeChange="10" Width="256" Name="SlideBOD" Grid.ColumnSpan="2" Margin="1,0,0,0" Value="{Binding Path=Apb.BOD, Mode=TwoWay}"></Slider>
+        <WrapPanel Grid.Column="4" Grid.Row="0">
+            <RadioButton GroupName="RadioBodMagnetic" IsChecked="{Binding Path=Apb.BodMagneticOrTrue, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=Magnetic}">magnetic</RadioButton>
+            <RadioButton GroupName="RadioBodMagnetic" IsChecked="{Binding Path=Apb.BodMagneticOrTrue, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=True}">true</RadioButton>
+        </WrapPanel>
+        <Label Grid.Column="0" Grid.Row="1">Bearing</Label>
+        <TextBox Grid.Column="1" Grid.Row="1" Width="80" Text="{Binding ElementName=SlideBearing,Path=Value, StringFormat=0.0}" Margin="0,0,1,0"/>
+        <Slider Grid.Column="2" Grid.Row="1" Maximum="359" SmallChange="1" LargeChange="10" Width="256" Name="SlideBearing" Grid.ColumnSpan="2" Margin="1,0,0,0" Value="{Binding Path=Apb.Bearing, Mode=TwoWay}"></Slider>
+        <WrapPanel Grid.Column="4" Grid.Row="1">
+            <RadioButton GroupName="RadioBearingMagnetic" IsChecked="{Binding Path=Apb.BearingMagneticOrTrue, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=Magnetic}">magnetic</RadioButton>
+            <RadioButton GroupName="RadioBearingMagnetic" IsChecked="{Binding Path=Apb.BearingMagneticOrTrue, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=True}">true</RadioButton>
+        </WrapPanel>
+        <Label Grid.Column="0" Grid.Row="2">Heading</Label>
+        <TextBox Grid.Column="1" Grid.Row="2"  Width="80" Text="{Binding ElementName=SlideHeading,Path=Value, StringFormat=0.0}" Margin="0,0,1,0"/>
+        <Slider Grid.Column="2" Grid.Row="2"  Maximum="359" SmallChange="1" LargeChange="10" Width="256" Name="SlideHeading" Grid.ColumnSpan="2" Margin="1,0,0,0" Value="{Binding Path=Apb.Heading, Mode=TwoWay}"></Slider>
+        <WrapPanel Grid.Column="4" Grid.Row="2">
+            <RadioButton GroupName="RadioHeadingMagnetic" IsChecked="{Binding Path=Apb.HeadingMagneticOrTrue, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=Magnetic}">magnetic</RadioButton>
+            <RadioButton GroupName="RadioHeadingMagnetic" IsChecked="{Binding Path=Apb.HeadingMagneticOrTrue, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=True}">true</RadioButton>
+        </WrapPanel>
+        <Label Grid.Column="0" Grid.Row="3">XTE</Label>
+        <TextBox Grid.Column="1" Grid.Row="3"  Width="80" Text="{Binding ElementName=SlideXTE,Path=Value, StringFormat=0.0}" Margin="0,0,1,0"/>
+        <Slider Grid.Column="2" Grid.Row="3"  Maximum="10" SmallChange=".1" LargeChange="10" Width="256" Name="SlideXTE" Grid.ColumnSpan="2" Margin="1,0,0,0" Value="{Binding Path=Apb.XTE, Mode=TwoWay}"></Slider>
+        <WrapPanel Grid.Column="4" Grid.Row="3">
+            <RadioButton GroupName="RadioXTEUnit" IsChecked="{Binding Path=Apb.XteUnits, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=NauticalMiles}">nautical miles</RadioButton>
+            <RadioButton GroupName="RadioXTEUnit" IsChecked="{Binding Path=Apb.XteUnits, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=KiloMeters}">km</RadioButton>
+        </WrapPanel>
+        <WrapPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4">
+            <Label>Steer:</Label>
+            <RadioButton GroupName="RadioSteerDirection" IsChecked="{Binding Path=Apb.SteerDirection, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=Neither}">neither</RadioButton>
+            <RadioButton GroupName="RadioSteerDirection" IsChecked="{Binding Path=Apb.SteerDirection, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=Left}">left</RadioButton>
+            <RadioButton GroupName="RadioSteerDirection" IsChecked="{Binding Path=Apb.SteerDirection, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=Right}">right</RadioButton>
+        </WrapPanel>
+    </Grid>
+
+</Window>
