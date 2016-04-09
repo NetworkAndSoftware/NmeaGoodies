@@ -8,7 +8,7 @@ namespace Nmea0183
     [Fact]
     public void Apb()
     {
-      var expected = new Apb("SN") // Electronic Positioning System, other/general
+      var expected = new APB("SN") // Electronic Positioning System, other/general
       {
         SteerTurn = MessageBase.Turn.Left,
         BOD = 131,
@@ -24,7 +24,7 @@ namespace Nmea0183
         ArrivalPerpendicular = MessageBase.Flag.Active
       };
 
-      var actual = new Apb("SN", "A,A,68.0000,L,N,V,A,131.0000,M,001,90.0000,T,123.0000,M".Split(','));
+      var actual = new APB("SN", "A,A,68.0000,L,N,V,A,131.0000,M,001,90.0000,T,123.0000,M".Split(','));
       Assert.Equal(expected.BOD, actual.BOD);
       Assert.Equal(expected.ToString(), actual.ToString());
     }
@@ -55,5 +55,25 @@ namespace Nmea0183
       Assert.InRange(actual.MagneticVariation, 16.444999, 16.445001);
 
     }
+
+    [Fact]
+    public void Hdm()
+    {
+      var expected = new HDM("AP")
+      {
+        Heading = 153.4,
+        Type = MessageBase.MagneticOrTrue.Magnetic
+      };
+      var actual = (HDM) MessageBase.Parse("$APHDM,153.40,M*00");
+
+      Assert.Equal(expected.Heading, actual.Heading);
+      Assert.Equal(expected.Type, actual.Type);
+
+      Assert.Equal(expected.ToString(), actual.ToString());
+      
+      Assert.InRange(actual.Heading, 153.399999, 153.400001);
+
+    }
+
   }
 }

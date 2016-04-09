@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Nmea0183.Constants;
 
 namespace Nmea0183.Messages
 {
@@ -10,12 +11,27 @@ namespace Nmea0183.Messages
       TalkerId = talkerId;
     }
 
-    public virtual string CommandName => GetCommandNameAttribute().Name.ToString();
+    public virtual string CommandName => GetCommandNameAttribute();
 
-    private CommandNameAttribute GetCommandNameAttribute()
+    public virtual MessageName Name
+    {
+      get
+      {
+        try
+        {
+          return ParseEnum<MessageName>(GetType().Name);
+        }
+        catch (Exception)
+        {
+          return MessageName.Unknown;
+        }
+      }
+    }
+
+    private string GetCommandNameAttribute()
     {
       var attributes = GetType().GetCustomAttributes(typeof (CommandNameAttribute), true);
-      return (CommandNameAttribute) attributes.First();
+      return ((CommandNameAttribute) attributes.First()).Name.ToString();
     }
 
     public string TalkerId { get; set; }
@@ -60,8 +76,10 @@ namespace Nmea0183.Messages
 
       switch (commandName)
       {
+        case "HDM":
+          return new HDM(talkerId, bodyparts);
         case "APB":
-          return new Apb(talkerId, bodyparts);
+          return new APB(talkerId, bodyparts);
         case "RMC":
           return new RMC(talkerId, bodyparts);
         default:
@@ -106,11 +124,18 @@ namespace Nmea0183.Messages
       KiloMeters = 'K'
     };
 
-    protected T ParseEnum<T>(string s)
+    protected T ParseOneLetterEnumByValue<T>(string s)
     {
       if (string.IsNullOrWhiteSpace(s))
         return default(T);
       return (T) Enum.Parse(typeof (T), ((int) s[0]).ToString());
+    }
+
+    protected T ParseEnum<T>(string s)
+    {
+      if (string.IsNullOrWhiteSpace(s))
+        return default(T);
+      return (T)Enum.Parse(typeof(T), s);
     }
 
     /// <summary>

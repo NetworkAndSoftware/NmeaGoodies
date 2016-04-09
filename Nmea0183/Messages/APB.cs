@@ -3,9 +3,10 @@ using Nmea0183.Constants;
 
 namespace Nmea0183.Messages
 {
-
-  [CommandName(MessageNames.APB)]
-  public class Apb : MessageBase
+  ///<summary>Auto Pilot B sentence</summary>
+  [CommandName(MessageName.APB)]
+  // ReSharper disable once InconsistentNaming
+  public class APB : MessageBase
   {
     public double BOD { get; set; }
     
@@ -27,7 +28,7 @@ namespace Nmea0183.Messages
     /// Creates empty, invalid APB command
     /// </summary>
     /// <param name="talkerId"></param>
-    public Apb(string talkerId) : base(talkerId)
+    public APB(string talkerId) : base(talkerId)
     { ArrivalPerpendicular = Flag.Void;
       ArrivalCircular = Flag.Void;
     }
@@ -37,20 +38,20 @@ namespace Nmea0183.Messages
     /// </summary>
     /// <param name="talkedId"></param>
     /// <param name="parts"></param>
-    internal Apb(string talkedId, string[] parts) : base(talkedId)
+    internal APB(string talkedId, string[] parts) : base(talkedId)
     {
       XTE = double.Parse(parts[2]);
-      SteerTurn = ParseEnum<Turn>(parts[3]);
-      XteUnits = ParseEnum<Units>(parts[4]);
-      ArrivalCircular = ParseEnum<Flag>(parts[5]);
-      ArrivalPerpendicular = ParseEnum<Flag>(parts[6]);
+      SteerTurn = ParseOneLetterEnumByValue<Turn>(parts[3]);
+      XteUnits = ParseOneLetterEnumByValue<Units>(parts[4]);
+      ArrivalCircular = ParseOneLetterEnumByValue<Flag>(parts[5]);
+      ArrivalPerpendicular = ParseOneLetterEnumByValue<Flag>(parts[6]);
       BOD = double.Parse(parts[7]);
-      BodMagneticOrTrue = ParseEnum<MagneticOrTrue>(parts[8]);
+      BodMagneticOrTrue = ParseOneLetterEnumByValue<MagneticOrTrue>(parts[8]);
       DestinationWayPointId = int.Parse(parts[9]);
       Bearing = double.Parse(parts[10]);
-      BearingMagneticOrTrue = ParseEnum<MagneticOrTrue>(parts[11]);
+      BearingMagneticOrTrue = ParseOneLetterEnumByValue<MagneticOrTrue>(parts[11]);
       Heading = double.Parse(parts[12]);
-      HeadingMagneticOrTrue = ParseEnum<MagneticOrTrue>(parts[13]);
+      HeadingMagneticOrTrue = ParseOneLetterEnumByValue<MagneticOrTrue>(parts[13]);
     }
 
     public Turn SteerTurn { get; set; }

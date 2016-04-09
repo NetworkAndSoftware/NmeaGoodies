@@ -5,8 +5,9 @@ using Nmea0183.Constants;
 // ReSharper disable InconsistentNaming
 
 namespace Nmea0183.Messages
-{
-  [CommandName(MessageNames.RMC)]
+{ ///<summary>recommended minimum data for gps</summary>
+  [CommandName(MessageName.RMC)]
+  // ReSharper disable once InconsistentNaming
   public class RMC : MessageBase
   {
     private const string DDMMYY = "ddMMyy";
@@ -32,12 +33,12 @@ namespace Nmea0183.Messages
     { 
     }
 
-    /// <summary>
-    /// Deserializes command 
-    /// </summary>
-    /// <param name="talkedId"></param>
-    /// <param name="commandBody"></param>
-    internal RMC(string talkedId, string[] parts) : base(talkedId)
+  /// <summary>
+  /// Deserializes command 
+  /// </summary>
+  /// <param name="talkedId"></param>
+  /// <param name="parts"></param>
+  internal RMC(string talkedId, string[] parts) : base(talkedId)
     {
       if (!string.IsNullOrWhiteSpace(parts[8]))
         DateTime = System.DateTime.ParseExact(parts[8], DDMMYY, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
@@ -49,15 +50,15 @@ namespace Nmea0183.Messages
         DateTime = DateTime?.Add(time.TimeOfDay) ?? time;
       }
 
-      Status = ParseEnum<Flag>(parts[1]);
+      Status = ParseOneLetterEnumByValue<Flag>(parts[1]);
       Latitude = float.Parse(parts[2]);
-      LatitudeHemisphere = ParseEnum<NorthSouth>(parts[3]);
+      LatitudeHemisphere = ParseOneLetterEnumByValue<NorthSouth>(parts[3]);
       Longitude = float.Parse(parts[4]);
-      LongitudeHemisphere = ParseEnum<EastWest>(parts[5]);
+      LongitudeHemisphere = ParseOneLetterEnumByValue<EastWest>(parts[5]);
       SOG = float.Parse(parts[6]);
       TMG = float.Parse(parts[7]);
       MagneticVariation = float.Parse(parts[9]);
-      MagneticVariationDirection = ParseEnum<EastWest>(parts[10]);
+      MagneticVariationDirection = ParseOneLetterEnumByValue<EastWest>(parts[10]);
     }
 
     protected override string CommandBody => $"{FormatTime()},{F(Status)},{Latitude:F3},{F(LatitudeHemisphere)},{Longitude:F3},{F(LongitudeHemisphere)},{SOG:F3},{TMG:F3},{FormatDate()},{MagneticVariation:F3},{F(MagneticVariationDirection)}";

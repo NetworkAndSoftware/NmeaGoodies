@@ -14,24 +14,24 @@ namespace Experiment1
   {
     private readonly RepeatingSender _repeatingSender;
 
-    public Apb Apb { get; set; }
+    public APB Apb { get; set; }
 
     public MainWindow()
     {
       try
       {
-        Apb = new Apb("SN")  // Electronic Positioning System, other/general
+        Apb = new APB("SN")  // Electronic Positioning System, other/general
         {
           BOD = 160,
-          BodMagneticOrTrue = Apb.MagneticOrTrue.Magnetic,
+          BodMagneticOrTrue = APB.MagneticOrTrue.Magnetic,
           Bearing = 160,
-          BearingMagneticOrTrue = Apb.MagneticOrTrue.Magnetic,
+          BearingMagneticOrTrue = APB.MagneticOrTrue.Magnetic,
           DestinationWayPointId = 1,
           Heading = 160,
-          HeadingMagneticOrTrue = Apb.MagneticOrTrue.Magnetic,
-          SteerTurn = Apb.Turn.Left,
+          HeadingMagneticOrTrue = APB.MagneticOrTrue.Magnetic,
+          SteerTurn = APB.Turn.Left,
           XTE = 0,
-          XteUnits = Apb.Units.NauticalMiles,
+          XteUnits = APB.Units.NauticalMiles,
         };
         InitializeComponent();
 

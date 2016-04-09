@@ -5,8 +5,10 @@ namespace Nmea0183.Constants
   /// <summary>
   /// From http://freenmea.net/docs/nmea0183
   /// </summary>
-  public enum MessageNames
+  public enum MessageName
   {
+    Unknown = 0,
+
     ///<summary>Waypoint Arrival Alarm</summary>
     AAM,
 
@@ -101,7 +103,7 @@ namespace Nmea0183.Constants
     ///<summary>Remote Control for a DGPS receiver</summary>
     PSLIB,
 
-    ///<summary>This is what the Sitex SP110 / AP47 puts out from its compass
+    ///<summary>This is what the Sitex SP110 / AP47 puts out from its compass</summary>
     HDM,
 
   };

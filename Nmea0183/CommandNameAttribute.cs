@@ -5,12 +5,12 @@ namespace Nmea0183
 {
   public class CommandNameAttribute : Attribute
   {
-    public CommandNameAttribute(MessageNames name)
+    public CommandNameAttribute(MessageName name)
     {
       Name = name;
     }
 
-    public MessageNames Name { get; private set; }
+    public MessageName Name { get; private set; }
 
   }
 }
