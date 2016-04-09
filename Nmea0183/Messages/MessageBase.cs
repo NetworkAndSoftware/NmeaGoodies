@@ -1,0 +1,126 @@
+﻿using System;
+using System.Linq;
+
+namespace Nmea0183.Messages
+{
+  public abstract class MessageBase
+  {
+    protected MessageBase(string talkerId)
+    {
+      TalkerId = talkerId;
+    }
+
+    public virtual string CommandName => GetCommandNameAttribute().Name.ToString();
+
+    private CommandNameAttribute GetCommandNameAttribute()
+    {
+      var attributes = GetType().GetCustomAttributes(typeof (CommandNameAttribute), true);
+      return (CommandNameAttribute) attributes.First();
+    }
+
+    public string TalkerId { get; set; }
+
+    protected abstract string CommandBody { get; }
+
+    private static string Checksum(string s)
+    {
+      byte sum = s.ToCharArray().Aggregate<char, byte>(0, (current, c) => (byte) (current ^ Convert.ToByte((char) c)));
+      return BitConverter.ToString(new[] {sum});
+    }
+
+    public override string ToString()
+    {
+      var line = TalkerId + CommandName + "," + CommandBody;
+      return "$" + line + '*' + Checksum(line);
+    }
+
+    private static bool IsChecksumValid(string line)
+    {
+      if ('*' != line[line.Length - 3])
+        return false;
+      var checksum = line.Substring(line.Length - 2);
+      var rest = line.Substring(1, line.Length - 4);
+      var coolchecksum = Checksum(rest);
+      return checksum == coolchecksum;
+    }
+
+    public static MessageBase Parse(string line)
+    {
+      line = line.Trim();
+
+      if (!IsChecksumValid(line))
+        throw new FormatException($"Checksum error: in line {line}");
+
+      var parts = line.Substring(0, line.Length - 3).Split(',');
+
+      var talkerId = parts[0].Substring(1, 2);
+      var commandName = parts[0].Substring(3);
+      var commandbody = string.Join(",", parts.Skip(1).Take(parts.Length - 1));
+      var bodyparts = commandbody.Split(',');
+
+      switch (commandName)
+      {
+        case "APB":
+          return new Apb(talkerId, bodyparts);
+        case "RMC":
+          return new RMC(talkerId, bodyparts);
+        default:
+          return new UnknownMessage(talkerId, commandName, commandbody);
+      }
+
+    }
+
+    public enum Flag
+    {
+      Void = 'V',
+      Active = 'A'
+    }
+
+    public enum Turn
+    {
+      Right = 'R',
+      Left = 'L',
+    };
+
+    public enum MagneticOrTrue
+    {
+      Magnetic = 'M',
+      True = 'T'
+    };
+
+    public enum NorthSouth
+    {
+      North = 'N',
+      South = 'S'
+    };
+
+    public enum EastWest
+    {
+      East = 'E',
+      West = 'W'
+    };
+
+    public enum Units
+    {
+      NauticalMiles = 'N', 
+      KiloMeters = 'K'
+    };
+
+    protected T ParseEnum<T>(string s)
+    {
+      if (string.IsNullOrWhiteSpace(s))
+        return default(T);
+      return (T) Enum.Parse(typeof (T), ((int) s[0]).ToString());
+    }
+
+    /// <summary>
+    /// Formats enum value as letter
+    /// </summary>
+    /// <returns></returns>
+    protected string F(object enumvalue)
+    { 
+      return 0 == (int) enumvalue ? String.Empty : Convert.ToChar(enumvalue).ToString();
+    }
+
+  }
+}

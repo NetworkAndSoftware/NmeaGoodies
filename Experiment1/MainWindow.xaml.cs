@@ -2,6 +2,8 @@
 using System.Net;
 using System.Windows;
 using Nmea0183;
+using Nmea0183.Communications;
+using Nmea0183.Messages;
 
 namespace Experiment1
 {
@@ -10,7 +12,7 @@ namespace Experiment1
   /// </summary>
   public partial class MainWindow
   {
-    private readonly MessageSender _messageSender;
+    private readonly RepeatingSender _repeatingSender;
 
     public Apb Apb { get; set; }
 
@@ -27,14 +29,14 @@ namespace Experiment1
           DestinationWayPointId = 1,
           Heading = 160,
           HeadingMagneticOrTrue = Apb.MagneticOrTrue.Magnetic,
-          SteerDirection = Apb.Direction.Left,
+          SteerTurn = Apb.Turn.Left,
           XTE = 0,
           XteUnits = Apb.Units.NauticalMiles,
         };
         InitializeComponent();
 
-        _messageSender = new MessageSender(IPAddress.Loopback) { Message = Apb };
-        _messageSender.Start();
+        _repeatingSender = new RepeatingSender() { Message = Apb };
+        _repeatingSender.Start();
       }
       catch (Exception x)
       {

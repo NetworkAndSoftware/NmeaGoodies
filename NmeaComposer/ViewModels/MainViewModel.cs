@@ -1,18 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Dynamic;
-using System.Net;
-using System.Threading;
 using System.Windows.Input;
-using System.Windows.Threading;
 using Nmea0183;
+using Nmea0183.Communications;
+using Nmea0183.Messages;
 using NmeaComposer.ViewModels.Tabs;
 
 namespace NmeaComposer.ViewModels
 {
   internal class MainViewModel : INotifyPropertyChanged
   {
-    private readonly MessageSender _messageSender;
+    private readonly RepeatingSender _repeatingSender;
     private string _talkerId;
 
     public string TalkerId
@@ -27,10 +25,7 @@ namespace NmeaComposer.ViewModels
 
     public Basic Basic { get; set; }
 
-    public string CompleteCommand
-    {
-      get { return null == _messageSender.Message ? null : _messageSender.Message.ToString(); }
-    }
+    public string CompleteCommand => _repeatingSender.Message?.ToString();
 
     public bool KeepSending
     {
@@ -38,11 +33,11 @@ namespace NmeaComposer.ViewModels
       {
         if (value)
         {
-          _messageSender.Start();
+          _repeatingSender.Start();
         }
         else
         {
-          _messageSender.Stop();
+          _repeatingSender.Stop();
         }
       }
     }
@@ -51,17 +46,17 @@ namespace NmeaComposer.ViewModels
     {
       Basic = new Basic(CreateMessageFromBasic);
       TalkerId = "SN";
-      _messageSender = new MessageSender(IPAddress.Loopback);
+      _repeatingSender = new RepeatingSender();
     }
 
     public void CreateMessageFromBasic()
     {
-      if (null != _messageSender)
+      if (null != _repeatingSender)
       {
         if (null != TalkerId && null != Basic.CommandName && null != Basic.CommandBody)
-          _messageSender.Message = new UnTypedMessage(TalkerId, Basic.CommandName, Basic.CommandBody);
+          _repeatingSender.Message = new UnknownMessage(TalkerId, Basic.CommandName, Basic.CommandBody);
         else
-          _messageSender.Message = null;
+          _repeatingSender.Message = null;
       }
 
 
@@ -89,8 +84,7 @@ namespace NmeaComposer.ViewModels
 
     private void NotifyPropertyChanged(string propertyname)
     {
-      if (PropertyChanged != null) 
-        PropertyChanged(this, new PropertyChangedEventArgs(propertyname));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
