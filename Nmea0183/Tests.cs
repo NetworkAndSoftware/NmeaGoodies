@@ -78,5 +78,42 @@ namespace Nmea0183
 
     }
 
+
+
+    [Fact]
+    public void Gbs()
+    {
+      var actual = MessageBase.Parse("$GPGBS,222247.00,2.0,1.5,2.7,,,,*41");
+
+    }
+
+    [Fact]
+    public void Gll()
+    {
+      var actual = MessageBase.Parse("$GPGLL,4857.49115,N,12302.35773,W,222247.00,A,D*7C");
+    }
+
+    [Fact]
+    public void Gga()
+    {
+      var actual = MessageBase.Parse("$GPGGA,222247.00,4857.49115,N,12302.35773,W,2,12,0.67,-3.8,M,-17.7,M,,0000*47");
+    }
+
+    [Fact]
+    public void ShouldBeAbleToReadAllCommandsInFileWithoutException()
+    {
+      string line;
+
+      // Read the file and display it line by line.
+      System.IO.StreamReader file = new System.IO.StreamReader(@"..\..\..\doc\autopilot-sample.txt");
+      while ((line = file.ReadLine()) != null)
+      {
+        var message = MessageBase.Parse(line);
+      }
+
+      file.Close();
+    }
+
   }
 }
+ 

@@ -63,6 +63,9 @@
     <Compile Include="CommandNameAttribute.cs" />
     <Compile Include="Constants\MessageName.cs" />
     <Compile Include="Communications\Connector.cs" />
+    <Compile Include="Messages\GBS.cs" />
+    <Compile Include="Messages\GGA.cs" />
+    <Compile Include="Messages\GLL.cs" />
     <Compile Include="Messages\HDM.cs" />
     <Compile Include="Messages\MessageBase.cs" />
     <Compile Include="Communications\MessageDispatcher.cs" />

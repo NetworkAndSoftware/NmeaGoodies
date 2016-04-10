@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{EBD27043-6B5
 	ProjectSection(SolutionItems) = preProject
 		doc\001notes.pdf = doc\001notes.pdf
 		doc\autopilot-sample.txt = doc\autopilot-sample.txt
+		running-notes.txt = running-notes.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowMessages", "ShowMessages\ShowMessages.csproj", "{605D894D-866E-4DF1-866E-9B6C8553ABFF}"

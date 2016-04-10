@@ -40,7 +40,7 @@ namespace Nmea0183.Messages
 
     private static string Checksum(string s)
     {
-      byte sum = s.ToCharArray().Aggregate<char, byte>(0, (current, c) => (byte) (current ^ Convert.ToByte((char) c)));
+      var sum = s.ToCharArray().Aggregate<char, byte>(0, (current, c) => (byte) (current ^ Convert.ToByte(c)));
       return BitConverter.ToString(new[] {sum});
     }
 
@@ -82,6 +82,12 @@ namespace Nmea0183.Messages
           return new APB(talkerId, bodyparts);
         case "RMC":
           return new RMC(talkerId, bodyparts);
+        case "GBS":
+          return new GBS(talkerId, bodyparts);
+        case "GLL":
+          return new GLL(talkerId, bodyparts);
+        case "GGA":
+          return new GGA(talkerId, bodyparts);
         default:
           return new UnknownMessage(talkerId, commandName, commandbody);
       }

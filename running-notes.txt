@@ -1,0 +1,21 @@
+TODO
+
+- add support for messages from AIS receiver when RMC not available. These are ducted through the AIS receiver
+
+Time, position, and fix related data:
+	$GPGGA,222247.00,4857.49115,N,12302.35773,W,2,12,0.67,-3.8,M,-17.7,M,,0000*47
+
+Position data: position fix, time of position fix, and status:
+	$GPGLL,4857.49115,N,12302.35773,W,222247.00,A,D*7C
+
+GNSS satellite fault detection: 
+	$GPGBS,222247.00,2.0,1.5,2.7,,,,*41
+    
+
+RESOURCES:
+
+http://www.gpsinformation.org/dale/nmea.htm
+http://www.hhhh.org/wiml/proj/nmeaxor.html
+http://www.trimble.com/OEM_ReceiverHelp/V4.44/en/NMEA-0183messages_MessageOverview.html
+http://freenmea.net/docs/nmea0183
+

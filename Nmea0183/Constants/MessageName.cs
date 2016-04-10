@@ -106,5 +106,10 @@ namespace Nmea0183.Constants
     ///<summary>This is what the Sitex SP110 / AP47 puts out from its compass</summary>
     HDM,
 
+    /// <summary>
+    /// GNSS satellite fault detection (RAIM support) 
+    /// (according to http://www.trimble.com/OEM_ReceiverHelp/V4.44/en/NMEA-0183messages_GBS.html )
+    /// </summary>
+    GBS,
   };
 }
