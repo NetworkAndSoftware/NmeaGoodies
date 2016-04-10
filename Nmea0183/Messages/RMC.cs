@@ -12,6 +12,8 @@ namespace Nmea0183.Messages
   {
     private const string DDMMYY = "ddMMyy";
     private const string HHMMSS = "HHmmss";
+    private const string HHMMSSfff = "HHmmss.FFF";
+
     public DateTime? DateTime { get; set; }
     public Flag Status { get; set; }      // Void indicates receiver error
     public double Latitude { get; set; }
@@ -29,6 +31,9 @@ namespace Nmea0183.Messages
     public double MagneticVariation { get; set; }
     public EastWest MagneticVariationDirection { get; set; }
 
+    // nmea 2.3
+    public FixMode Mode { get; set; }
+
     public RMC(string talkerId) : base(talkerId)
     { 
     }
@@ -39,31 +44,59 @@ namespace Nmea0183.Messages
   /// <param name="talkedId"></param>
   /// <param name="parts"></param>
   internal RMC(string talkedId, string[] parts) : base(talkedId)
+  {
+    if (!string.IsNullOrWhiteSpace(parts[8]))
+      DateTime = System.DateTime.ParseExact(parts[8], DDMMYY, DateTimeFormatInfo.InvariantInfo,
+        DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+
+    if (!string.IsNullOrWhiteSpace(parts[8]))
     {
-      if (!string.IsNullOrWhiteSpace(parts[8]))
-        DateTime = System.DateTime.ParseExact(parts[8], DDMMYY, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+      // var time = System.DateTime.ParseExact(parts[0], HHMMSS, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
 
-      if (!string.IsNullOrWhiteSpace(parts[8]))
+      DateTime time;
+      if (
+        !System.DateTime.TryParseExact(parts[0], HHMMSSfff, DateTimeFormatInfo.InvariantInfo,
+          DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out time))
       {
-        var time = System.DateTime.ParseExact(parts[0], HHMMSS, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
-
-        DateTime = DateTime?.Add(time.TimeOfDay) ?? time;
+        time = System.DateTime.ParseExact(parts[0], HHMMSS, DateTimeFormatInfo.InvariantInfo,
+          DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
       }
 
-      Status = ParseOneLetterEnumByValue<Flag>(parts[1]);
-      Latitude = float.Parse(parts[2]);
-      LatitudeHemisphere = ParseOneLetterEnumByValue<NorthSouth>(parts[3]);
-      Longitude = float.Parse(parts[4]);
-      LongitudeHemisphere = ParseOneLetterEnumByValue<EastWest>(parts[5]);
-      SOG = float.Parse(parts[6]);
-      TMG = float.Parse(parts[7]);
-      MagneticVariation = float.Parse(parts[9]);
-      MagneticVariationDirection = ParseOneLetterEnumByValue<EastWest>(parts[10]);
+
+      DateTime = DateTime?.Add(time.TimeOfDay) ?? time;
     }
 
-    protected override string CommandBody => $"{FormatTime()},{F(Status)},{Latitude:F3},{F(LatitudeHemisphere)},{Longitude:F3},{F(LongitudeHemisphere)},{SOG:F3},{TMG:F3},{FormatDate()},{MagneticVariation:F3},{F(MagneticVariationDirection)}";
+    Status = ParseOneLetterEnumByValue<Flag>(parts[1]);
+    Latitude = float.Parse(parts[2]);
+    LatitudeHemisphere = ParseOneLetterEnumByValue<NorthSouth>(parts[3]);
+    Longitude = float.Parse(parts[4]);
+    LongitudeHemisphere = ParseOneLetterEnumByValue<EastWest>(parts[5]);
+    SOG = float.Parse(parts[6]);
+    TMG = float.Parse(parts[7]);
 
-    private string FormatDate()
+    if (!string.IsNullOrWhiteSpace(parts[9]))
+      MagneticVariation = float.Parse(parts[9]);
+
+    if (!string.IsNullOrWhiteSpace(parts[10]))
+      MagneticVariationDirection = ParseOneLetterEnumByValue<EastWest>(parts[10]);
+
+    if (parts.Length > 11 && !string.IsNullOrWhiteSpace(parts[11]))
+      Mode = ParseOneLetterEnumByValue<FixMode>(parts[11]);
+  }
+
+  protected override string CommandBody
+  {
+    get
+    {
+      string s = 
+        $"{FormatTime()},{F(Status)},{Latitude:F3},{F(LatitudeHemisphere)},{Longitude:F3},{F(LongitudeHemisphere)},{SOG:F3},{TMG:F3},{FormatDate()},{MagneticVariation:F3},{F(MagneticVariationDirection)}";
+      if (0 != (int) Mode)
+        s = s + $",{F(Mode)}";
+      return s;
+    }
+  }
+
+  private string FormatDate()
     {
       return DateTime?.ToString(DDMMYY, DateTimeFormatInfo.InvariantInfo) ?? string.Empty;
     }

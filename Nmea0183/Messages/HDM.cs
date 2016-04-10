@@ -4,7 +4,7 @@ using Nmea0183.Constants;
 namespace Nmea0183.Messages
 {
   ///<summary>This is what the Sitex SP110 / AP47 puts out from its compass</summary>
-  [CommandName(MessageName.APB)]
+  [CommandName(MessageName.HDM)]
   // ReSharper disable once InconsistentNaming
   public class HDM : MessageBase
   {

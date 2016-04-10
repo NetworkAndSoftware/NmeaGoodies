@@ -66,6 +66,7 @@ namespace Experiment2
             LabelTmg.Content = rmc.SOG > MINIMUM_TMG_SPEED ? $"{rmc.TMG:F1}" : $"Go faster than {MINIMUM_TMG_SPEED} knots."; // tmg not accurate when going slow
             UpdateDeviation();
             break;            
+
           case MessageName.HDM:
             var hdm = (HDM) message;
             LabelHeading.Content = $"{hdm.Heading} {hdm.Type}";
@@ -79,7 +80,6 @@ namespace Experiment2
 
       if (IsStale(MessageName.HDM))
         LabelHeading.Content = "Stale";
-
     }
 
     private ulong _samples = 0;

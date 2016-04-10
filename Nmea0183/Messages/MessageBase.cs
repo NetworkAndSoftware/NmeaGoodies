@@ -124,6 +124,15 @@ namespace Nmea0183.Messages
       KiloMeters = 'K'
     };
 
+    public enum FixMode
+    {
+      Autonomous = 'A',
+      Differential = 'D',
+      Estimated = 'E',
+      NotValid = 'N',
+      Simulator = 'S'
+    }
+
     protected T ParseOneLetterEnumByValue<T>(string s)
     {
       if (string.IsNullOrWhiteSpace(s))

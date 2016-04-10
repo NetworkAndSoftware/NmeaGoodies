@@ -54,6 +54,9 @@ namespace Nmea0183
 
       Assert.InRange(actual.MagneticVariation, 16.444999, 16.445001);
 
+      // A different real life example. Time has two or three decimals, magnetic variation fields are missing and this is NMEA 2.3, with an extra field D or A.
+      actual = (RMC) MessageBase.Parse("$GPRMC,222248.00,A,4857.49084,N,12302.35656,W,3.018,114.14,090416,,,D*7A");
+      Assert.NotNull(actual);
     }
 
     [Fact]
