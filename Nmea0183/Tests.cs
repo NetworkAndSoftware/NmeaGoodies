@@ -1,4 +1,5 @@
 ﻿using Nmea0183.Messages;
+using Nmea0183.Messages.Enum;
 using Xunit;
 
 namespace Nmea0183
@@ -10,18 +11,18 @@ namespace Nmea0183
     {
       var expected = new APB("SN") // Electronic Positioning System, other/general
       {
-        SteerTurn = MessageBase.Turn.Left,
+        SteerTurn = Turn.Left,
         BOD = 131,
-        BodMagneticOrTrue = MessageBase.MagneticOrTrue.Magnetic,
+        BodMagneticOrTrue = MagneticOrTrue.Magnetic,
         DestinationWayPointId = 1,
         XTE = 68,
-        XteUnits = MessageBase.Units.NauticalMiles,
+        XteUnits = Units.NauticalMiles,
         Bearing = 90,
-        BearingMagneticOrTrue = MessageBase.MagneticOrTrue.True,
+        BearingMagneticOrTrue = MagneticOrTrue.True,
         Heading = 123,
-        HeadingMagneticOrTrue = MessageBase.MagneticOrTrue.Magnetic,
-        ArrivalCircular = MessageBase.Flag.Void,
-        ArrivalPerpendicular = MessageBase.Flag.Active
+        HeadingMagneticOrTrue = MagneticOrTrue.Magnetic,
+        ArrivalCircular = Flag.Void,
+        ArrivalPerpendicular = Flag.Active
       };
 
       var actual = new APB("SN", "A,A,68.0000,L,N,V,A,131.0000,M,001,90.0000,T,123.0000,M".Split(','));
@@ -35,11 +36,11 @@ namespace Nmea0183
     {
       var expected = new RMC("SN")
       {
-        Status = MessageBase.Flag.Active,
+        Status = Flag.Active,
         Latitude = 4900.859F,
-        LatitudeHemisphere = MessageBase.NorthSouth.North,
+        LatitudeHemisphere = NorthSouth.North,
         Longitude = 12304.663F,
-        LongitudeHemisphere = MessageBase.EastWest.West,
+        LongitudeHemisphere = EastWest.West,
         SOG = 0.111F,
         TMG = 200.928F,
         // missing Magnetic Variation
@@ -65,7 +66,7 @@ namespace Nmea0183
       var expected = new HDM("AP")
       {
         Heading = 153.4,
-        Type = MessageBase.MagneticOrTrue.Magnetic
+        Type = MagneticOrTrue.Magnetic
       };
       var actual = (HDM) MessageBase.Parse("$APHDM,153.40,M*00");
 

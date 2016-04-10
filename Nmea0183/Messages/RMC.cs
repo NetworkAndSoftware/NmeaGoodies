@@ -1,20 +1,32 @@
 ﻿using System;
 using System.Globalization;
 using Nmea0183.Constants;
+using Nmea0183.Messages.Enum;
+using Nmea0183.Messages.Interfaces;
 
 // ReSharper disable InconsistentNaming
 
 namespace Nmea0183.Messages
-{ ///<summary>recommended minimum data for gps</summary>
+{
+  ///<summary>recommended minimum data for gps</summary>
   [CommandName(MessageName.RMC)]
   // ReSharper disable once InconsistentNaming
-  public class RMC : MessageBase
+  public class RMC : MessageBase, IHasPosition, IMightHaveTime, IHasDateAndTime, IHasStatus
   {
-    private const string DDMMYY = "ddMMyy";
-    private const string HHMMSS = "HHmmss";
-    private const string HHMMSSfff = "HHmmss.FFF";
-
     public DateTime? DateTime { get; set; }
+
+    // Implementation of IMightHaveTime
+    public TimeSpan? Time
+    {
+      get { return DateTime?.TimeOfDay; }
+      set
+      { if (!DateTime.HasValue)
+          DateTime = new DateTime();
+
+        DateTime = DateTime.Value.Date + value;
+      }
+    }
+
     public Flag Status { get; set; }      // Void indicates receiver error
     public double Latitude { get; set; }
     public NorthSouth LatitudeHemisphere { get; set; }
@@ -46,22 +58,24 @@ namespace Nmea0183.Messages
   internal RMC(string talkedId, string[] parts) : base(talkedId)
   {
     if (!string.IsNullOrWhiteSpace(parts[8]))
-      DateTime = System.DateTime.ParseExact(parts[8], DDMMYY, DateTimeFormatInfo.InvariantInfo,
+      DateTime = System.DateTime.ParseExact(parts[8], DATETIME_DDMMYY, DateTimeFormatInfo.InvariantInfo,
         DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
 
     if (!string.IsNullOrWhiteSpace(parts[8]))
     {
-      // var time = System.DateTime.ParseExact(parts[0], HHMMSS, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+        DateTime time;
 
-      DateTime time;
-      if (
-        !System.DateTime.TryParseExact(parts[0], HHMMSSfff, DateTimeFormatInfo.InvariantInfo,
-          DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out time))
-      {
-        time = System.DateTime.ParseExact(parts[0], HHMMSS, DateTimeFormatInfo.InvariantInfo,
-          DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
-      }
+        /* 
+              
+              if (
+                !System.DateTime.TryParseExact(parts[0], HHMMSSfff, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out time))
+              {
+                time = System.DateTime.ParseExact(parts[0], HHMMSS, DateTimeFormatInfo.InvariantInfo,
+                  DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+              }
+        */
 
+     time = System.DateTime.ParseExact(parts[0], DATETIME_HHMMSSfff, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
 
       DateTime = DateTime?.Add(time.TimeOfDay) ?? time;
     }
@@ -98,14 +112,15 @@ namespace Nmea0183.Messages
 
   private string FormatDate()
     {
-      return DateTime?.ToString(DDMMYY, DateTimeFormatInfo.InvariantInfo) ?? string.Empty;
+      return DateTime?.ToString(DATETIME_DDMMYY, DateTimeFormatInfo.InvariantInfo) ?? string.Empty;
     }
 
     private string FormatTime()
     {
-      return DateTime?.ToString(HHMMSS, DateTimeFormatInfo.InvariantInfo) ?? string.Empty;
+      return DateTime?.ToString(DATETIME_HHMMSSfff, DateTimeFormatInfo.InvariantInfo) ?? string.Empty;
     }
-  }
+
+}
 
 
 }

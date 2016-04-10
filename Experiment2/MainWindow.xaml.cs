@@ -9,6 +9,7 @@ using Nmea0183;
 using Nmea0183.Communications;
 using Nmea0183.Constants;
 using Nmea0183.Messages;
+using Nmea0183.Messages.Enum;
 
 namespace Experiment2
 {
@@ -28,10 +29,10 @@ namespace Experiment2
         Apb = new APB("SN") // Electronic Positioning System, other/general
         {
           BOD = 160,
-          BodMagneticOrTrue = MessageBase.MagneticOrTrue.Magnetic,
+          BodMagneticOrTrue = MagneticOrTrue.Magnetic,
           DestinationWayPointId = 1,
           XTE = 0,
-          XteUnits = MessageBase.Units.NauticalMiles
+          XteUnits = Units.NauticalMiles
         };
         Adjust();
 
@@ -115,7 +116,7 @@ namespace Experiment2
     {
       var apb = (APB) messageBase;
 
-      apb.SteerTurn = apb.SteerTurn == MessageBase.Turn.Left ? MessageBase.Turn.Right : MessageBase.Turn.Left;
+      apb.SteerTurn = apb.SteerTurn == Turn.Left ? Turn.Right : Turn.Left;
     }
 
 

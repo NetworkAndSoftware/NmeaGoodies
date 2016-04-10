@@ -4,6 +4,7 @@ using System.Windows;
 using Nmea0183;
 using Nmea0183.Communications;
 using Nmea0183.Messages;
+using Nmea0183.Messages.Enum;
 
 namespace Experiment1
 {
@@ -23,15 +24,15 @@ namespace Experiment1
         Apb = new APB("SN")  // Electronic Positioning System, other/general
         {
           BOD = 160,
-          BodMagneticOrTrue = APB.MagneticOrTrue.Magnetic,
+          BodMagneticOrTrue = MagneticOrTrue.Magnetic,
           Bearing = 160,
-          BearingMagneticOrTrue = APB.MagneticOrTrue.Magnetic,
+          BearingMagneticOrTrue = MagneticOrTrue.Magnetic,
           DestinationWayPointId = 1,
           Heading = 160,
-          HeadingMagneticOrTrue = APB.MagneticOrTrue.Magnetic,
-          SteerTurn = APB.Turn.Left,
+          HeadingMagneticOrTrue = MagneticOrTrue.Magnetic,
+          SteerTurn = Turn.Left,
           XTE = 0,
-          XteUnits = APB.Units.NauticalMiles,
+          XteUnits = Units.NauticalMiles,
         };
         InitializeComponent();
 

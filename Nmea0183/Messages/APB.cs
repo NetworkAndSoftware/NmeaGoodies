@@ -1,5 +1,6 @@
 ﻿using System;
 using Nmea0183.Constants;
+using Nmea0183.Messages.Enum;
 
 namespace Nmea0183.Messages
 {

@@ -79,7 +79,8 @@ namespace NmeaComposer.ViewModels
         _viewmodel.CreateMessageFromBasic(); 
       }
 
-      public event EventHandler CanExecuteChanged;
+
+      public event EventHandler CanExecuteChanged { add { } remove { } }
     }
 
     private void NotifyPropertyChanged(string propertyname)
@@ -88,5 +89,6 @@ namespace NmeaComposer.ViewModels
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
+
   }
 }

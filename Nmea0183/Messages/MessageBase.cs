@@ -6,6 +6,11 @@ namespace Nmea0183.Messages
 {
   public abstract class MessageBase
   {
+    protected const string DATETIME_DDMMYY = "ddMMyy";
+    protected const string DATETIME_HHMMSS = "HHmmss";
+    protected const string DATETIME_HHMMSSfff = "HHmmss.FFF";
+    protected const string TIMESPAN_HHMMSSfff = "hhmmss\\.FFF";
+
     protected MessageBase(string talkerId)
     {
       TalkerId = talkerId;
@@ -94,63 +99,18 @@ namespace Nmea0183.Messages
 
     }
 
-    public enum Flag
-    {
-      Void = 'V',
-      Active = 'A'
-    }
-
-    public enum Turn
-    {
-      Right = 'R',
-      Left = 'L',
-    };
-
-    public enum MagneticOrTrue
-    {
-      Magnetic = 'M',
-      True = 'T'
-    };
-
-    public enum NorthSouth
-    {
-      North = 'N',
-      South = 'S'
-    };
-
-    public enum EastWest
-    {
-      East = 'E',
-      West = 'W'
-    };
-
-    public enum Units
-    {
-      NauticalMiles = 'N', 
-      KiloMeters = 'K'
-    };
-
-    public enum FixMode
-    {
-      Autonomous = 'A',
-      Differential = 'D',
-      Estimated = 'E',
-      NotValid = 'N',
-      Simulator = 'S'
-    }
-
     protected T ParseOneLetterEnumByValue<T>(string s)
     {
       if (string.IsNullOrWhiteSpace(s))
         return default(T);
-      return (T) Enum.Parse(typeof (T), ((int) s[0]).ToString());
+      return (T) System.Enum.Parse(typeof (T), ((int) s[0]).ToString());
     }
 
     protected T ParseEnum<T>(string s)
     {
       if (string.IsNullOrWhiteSpace(s))
         return default(T);
-      return (T)Enum.Parse(typeof(T), s);
+      return (T)System.Enum.Parse(typeof(T), s);
     }
 
     /// <summary>
@@ -163,4 +123,6 @@ namespace Nmea0183.Messages
     }
 
   }
+
+
 }
