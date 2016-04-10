@@ -91,21 +91,21 @@ namespace Nmea0183.Messages
         var parts = new List<string>
         {
           FormatTime(),
-          $"{Latitude:F3},{ F(LatitudeHemisphere)},{ Longitude: F3},{ F(LongitudeHemisphere)}",
+          $"{Latitude:F3},{F(LatitudeHemisphere)},{Longitude: F3},{F(LongitudeHemisphere)}",
           F(FixQuality),
           $"{TrackedSatelliteCount:D2}",
-          $"{ HorizontalDilution:F1}",
-          $"{ Altitude:F1}",
+          $"{HorizontalDilution:F1}",
+          $"{Altitude:F1}",
           F(AltitudeUnit),
-          $"{ MeanSeaLevel:F1}",
+          $"{MeanSeaLevel:F1}",
           F(MeanSeaLevelUnit),
           TimeSinceLastDGPSFix.HasValue ? ((int) TimeSinceLastDGPSFix.Value.TotalSeconds).ToString() : string.Empty,
           DGPSStationId.ToString()
-    };
+        };
 
         return string.Join(",", parts);
       }
-      
+
     }
 
     private string FormatTime()

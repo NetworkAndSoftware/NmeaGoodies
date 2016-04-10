@@ -107,9 +107,21 @@ namespace Nmea0183
 
       // Read the file and display it line by line.
       System.IO.StreamReader file = new System.IO.StreamReader(@"..\..\..\doc\autopilot-sample.txt");
+
+      int linenumber = 0;
+
       while ((line = file.ReadLine()) != null)
       {
-        var message = MessageBase.Parse(line);
+        linenumber++;
+
+        MessageBase message;
+
+        if (line != @"$PSMDOV,1"  // Shipmodul overflow
+            && !line.StartsWith("$,") // nonsense I haven't figured out yet
+            && !line.StartsWith("!AI") // AIS stuff
+            && !line.StartsWith("!") // weed out other garbage
+            ) 
+          message = MessageBase.Parse(line);
       }
 
       file.Close();

@@ -27,7 +27,10 @@
 
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using Nmea0183.Constants;
+using Nmea0183.Messages.Enum;
 using Nmea0183.Messages.Interfaces;
 
 namespace Nmea0183.Messages
@@ -41,6 +44,13 @@ namespace Nmea0183.Messages
   public class GBS : MessageBase, IMightHaveTime
   {
     public TimeSpan? Time { get; set; }
+    public double? LatitudeError { get; set; }
+    public double? LongitudeError { get; set; }
+    public int? MostLikelyFailedSatelliteId { get; set; }
+    public double? MissedDetectionProbability { get; set; }
+    public double? BiasEstimate { get; set; }
+    public double? BiasEstimateStandardDeviation { get; set; }
+
 
     public GBS(string talkerId) : base(talkerId)
     {
@@ -48,9 +58,41 @@ namespace Nmea0183.Messages
 
     internal GBS(string talkerId, string[] parts) : base(talkerId)
     {
-      throw new System.NotImplementedException();
+      Time = TimeSpan.ParseExact(parts[0], TIMESPAN_HHMMSSfff, DateTimeFormatInfo.InvariantInfo);
+      if (!string.IsNullOrWhiteSpace(parts[1]))
+        LatitudeError = double.Parse(parts[1]);
+      if (!string.IsNullOrWhiteSpace(parts[2]))
+        LongitudeError = double.Parse(parts[2]);
+      if (!string.IsNullOrWhiteSpace(parts[3]))
+        MissedDetectionProbability = double.Parse(parts[3]);
+      if (!string.IsNullOrWhiteSpace(parts[4]))
+        BiasEstimate = double.Parse(parts[4]);
+      if (!string.IsNullOrWhiteSpace(parts[5]))
+        BiasEstimateStandardDeviation = double.Parse(parts[5]);
     }
 
-    protected override string CommandBody { get; }
+    protected override string CommandBody
+    {
+      get
+      {
+        var parts = new List<string>
+        {
+          FormatTime(),
+          LatitudeError.HasValue? LatitudeError.Value.ToString(CultureInfo.InvariantCulture) : string.Empty,
+          LongitudeError.HasValue? LongitudeError.Value.ToString(CultureInfo.InvariantCulture) : string.Empty,
+          MostLikelyFailedSatelliteId.HasValue ? MostLikelyFailedSatelliteId.ToString() : string.Empty,
+          MissedDetectionProbability.HasValue ? MissedDetectionProbability.ToString() : string.Empty,
+          BiasEstimate.HasValue ? BiasEstimate.ToString() : string.Empty,
+          BiasEstimateStandardDeviation.HasValue ? BiasEstimateStandardDeviation.ToString() : string.Empty
+        };
+
+        return string.Join(",", parts);
+      }
+    }
+
+    private string FormatTime()
+    {
+      return Time?.ToString(DATETIME_HHMMSSfff) ?? string.Empty;
+    }
   }
 }

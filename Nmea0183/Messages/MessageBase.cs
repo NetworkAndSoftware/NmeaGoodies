@@ -69,6 +69,9 @@ namespace Nmea0183.Messages
     {
       line = line.Trim();
 
+      if (line[0] != '$')
+        throw new FormatException("Does not look like NMEA0183 message");
+
       if (!IsChecksumValid(line))
         throw new FormatException($"Checksum error: in line {line}");
 
