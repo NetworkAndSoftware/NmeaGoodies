@@ -18,7 +18,7 @@ namespace Nmea0183.Communications
   /// </summary>
   public class MessageReader
   {
-    private const int QUEUE_MAX_LENGTH = 25;
+    private const int QUEUE_MAX_LENGTH = 256;
     
     public readonly Queue<MessageBase> Messages = new Queue<MessageBase>(QUEUE_MAX_LENGTH);
 

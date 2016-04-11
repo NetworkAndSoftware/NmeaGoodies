@@ -10,18 +10,12 @@ namespace Nmea0183.Messages
   public class APB : MessageBase
   {
     public double BOD { get; set; }
-    
     public MagneticOrTrue BodMagneticOrTrue { get; set; }
-
     public double XTE { get; set; }
     public double Bearing { get; set; }
-
     public MagneticOrTrue BearingMagneticOrTrue { get; set; }
-
     public double Heading { get; set; }
-
     public MagneticOrTrue HeadingMagneticOrTrue { get; set; }
-
     public Flag ArrivalPerpendicular { get; set; }
     public Flag ArrivalCircular { get; set; }
 
