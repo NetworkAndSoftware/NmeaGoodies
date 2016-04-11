@@ -24,7 +24,7 @@ namespace Nmea0183.Messages
       {
         try
         {
-          return ParseEnum<MessageName>(GetType().Name);
+          return MessageFormatting.ParseEnum<MessageName>(GetType().Name);
         }
         catch (Exception)
         {
@@ -69,6 +69,9 @@ namespace Nmea0183.Messages
     {
       line = line.Trim();
 
+      if (string.IsNullOrWhiteSpace(line))
+        throw new FormatException("Line is null or whitespace");
+
       if (line[0] != '$')
         throw new FormatException("Does not look like NMEA0183 message");
 
@@ -77,55 +80,35 @@ namespace Nmea0183.Messages
 
       var parts = line.Substring(0, line.Length - 3).Split(',');
 
-      var talkerId = parts[0].Substring(1, 2);
-      var commandName = parts[0].Substring(3);
-      var commandbody = string.Join(",", parts.Skip(1).Take(parts.Length - 1));
-      var bodyparts = commandbody.Split(',');
-
-      switch (commandName)
+      try
       {
-        case "HDM":
-          return new HDM(talkerId, bodyparts);
-        case "APB":
-          return new APB(talkerId, bodyparts);
-        case "RMC":
-          return new RMC(talkerId, bodyparts);
-        case "GBS":
-          return new GBS(talkerId, bodyparts);
-        case "GLL":
-          return new GLL(talkerId, bodyparts);
-        case "GGA":
-          return new GGA(talkerId, bodyparts);
-        default:
-          return new UnknownMessage(talkerId, commandName, commandbody);
+        var talkerId = parts[0].Substring(1, 2);
+        var commandName = parts[0].Substring(3);
+        var commandbody = string.Join(",", parts.Skip(1).Take(parts.Length - 1));
+        var bodyparts = commandbody.Split(',');
+
+        switch (commandName)
+        {
+          case "HDM":
+            return new HDM(talkerId, bodyparts);
+          case "APB":
+            return new APB(talkerId, bodyparts);
+          case "RMC":
+            return new RMC(talkerId, bodyparts);
+          case "GBS":
+            return new GBS(talkerId, bodyparts);
+          case "GLL":
+            return new GLL(talkerId, bodyparts);
+          case "GGA":
+            return new GGA(talkerId, bodyparts);
+          default:
+            return new UnknownMessage(talkerId, commandName, commandbody);
+        }
       }
-
-    }
-
-    // TODO: this needs to go somewhere else
-    public static T ParseOneLetterEnumByValue<T>(string s)
-    {
-      if (string.IsNullOrWhiteSpace(s))
-        return default(T);
-      return (T) System.Enum.Parse(typeof (T), ((int) s[0]).ToString());
-    }
-
-    // TODO: this needs to go somewhere else
-    public T ParseEnum<T>(string s)
-    {
-      if (string.IsNullOrWhiteSpace(s))
-        return default(T);
-      return (T)System.Enum.Parse(typeof(T), s);
-    }
-
-    /// <summary>
-    /// Formats enum value as letter
-    /// </summary>
-    /// <returns></returns>
-    // TODO: this needs to go somewhere else
-    public static string F(object enumvalue)
-    { 
-      return 0 == (int) enumvalue ? string.Empty : Convert.ToChar(enumvalue).ToString();
+      catch (Exception x)
+      {
+        throw new FormatException("Unknown parsing error. Check inner exception", x);
+      }
     }
 
   }

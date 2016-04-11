@@ -39,14 +39,14 @@ namespace Nmea0183.Messages
     {
       Position = new Position(parts[0], parts[1], parts[2], parts[3]);
       Time = TimeSpan.ParseExact(parts[4], TIMESPAN_HHMMSSfff, DateTimeFormatInfo.InvariantInfo);
-      Status = ParseOneLetterEnumByValue<Flag>(parts[5]);
+      Status = MessageFormatting.ParseOneLetterEnumByValue<Flag>(parts[5]);
     }
 
-    protected override string CommandBody => $"{Position},{FormatTime()},{F(Status)}";
+    protected override string CommandBody => $"{Position},{FormatTime()},{MessageFormatting.F(Status)}";
 
     private string FormatTime()
     {
-      return Time?.ToString(DATETIME_HHMMSSfff) ?? string.Empty;
+      return Time?.ToString(TIMESPAN_HHMMSSfff) ?? string.Empty;
     }
 
   }

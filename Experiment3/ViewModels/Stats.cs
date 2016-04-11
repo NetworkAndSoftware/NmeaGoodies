@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Windows.Data;
 using System.Windows.Threading;
 using Experiment3.Annotations;
+using Experiment3.Models;
+using Geometry;
 using Nmea0183.Communications;
 using Nmea0183.Constants;
 using Nmea0183.Messages;
-using Nmea0183.Messages.Enum;
+using Nmea0183.Messages.Interfaces;
 
 namespace Experiment3.ViewModels
 {
   internal class Stats : INotifyPropertyChanged
   {
-    private const int MINIMUM_SPEED_FOR_VALID_CALCULATIONS = 1;
-    private static readonly TimeSpan UpdateStaleTime = TimeSpan.FromSeconds(3);
-
+    private const double MINIMUM_SPEED_FOR_VALID_CALCULATIONS = 1;
+    
     public Stats()
     {
       MessageDispatcher.IncomingMessage += OnIncomingMessage;
@@ -27,39 +26,100 @@ namespace Experiment3.ViewModels
       timer.Tick += TimerTick;
       timer.Start();
     }
-
-
-    private bool IsStale(MessageName message) => !_lastMessageByType.ContainsKey(message) || DateTime.UtcNow - _lastMessageByType[message].Item2 > UpdateStaleTime;
-
+    
     private void TimerTick(object sender, EventArgs e)
     {
       CallPropertyChangedForStaleProperties();
     }
 
-    private void GotNewPosition()
+    private QuantityWithMetadata<Coordinate> _lastposition;
+
+    private void OnUpdatePosition(QuantityWithMetadata<Coordinate> coordinate)
     {
-      if (null == Cog || Cog.IsStale)
+
+      if (null == Sog || Sog.Source != QuantityWithMetadata<double>.SourceType.External || Sog.IsStale)
+        // Try to calculate Sog from position data
+        if (null != _lastposition && !_lastposition.IsStale)
+        {
+          var angulardistance = ((Coordinate) coordinate).Distance(_lastposition);
+          var distance = Ball.EarthSurfaceApproximation.Distance(angulardistance).NauticalMiles();
+          var elapsed = DateTime.UtcNow - _lastposition.Updated;
+          // ReSharper disable once PossibleInvalidOperationException
+          Sog = distance/elapsed.Value.TotalHours;
+          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Sog"));
+        }
+
+      if (null == Cog || Cog.Source != QuantityWithMetadata<double>.SourceType.External || Cog.IsStale)
       {
         // Try to calculate Cog from position data
+        if (null != _lastposition && !_lastposition.IsStale)
+        {
+          if (Sog > MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
+          {
+            var cog = _lastposition.Value.InitialCourse(coordinate);
+            Cog = cog.Degrees;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cog"));
+            OnUpdateCog();
+          }
+        }
+      }
 
-        // TODO:
-        // - Get angle from new position compared to last position
-        // - update Cog
+      _lastposition = coordinate;
+    }
 
-        // - update last position
+    private void OnUpdateCog()
+    {
+      if (null != Heading && !Heading.IsStale)
+      {
+        UpdateDeviation();
       }
     }
+
+    private bool AnyStale(IEnumerable<QuantityWithMetadata<double>> properties)
+    {
+      return properties.Any(property => (null == property) || property.IsStale);
+    }
+
+    private ulong _samples;
+    private double _meandeviation;
+
+    void UpdateDeviation()
+    {
+      if (AnyStale(new []{Sog, Cog, Heading}))
+        return;
+
+      if (Sog < MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
+        return;
+
+      var deviation = Heading.Value - Cog.Value;
+
+      _meandeviation = (deviation + _samples * _meandeviation) / (_samples + 1);
+
+      _samples++;
+
+      MeanDeviation = _meandeviation;
+      SampleCount = _samples;
+      CorrectedHeading = Heading - MeanDeviation;
+
+      if (PropertyChanged == null)
+        return;
+
+      PropertyChanged(this, new PropertyChangedEventArgs("MeanDeviation"));
+      PropertyChanged(this, new PropertyChangedEventArgs("SampleCount"));
+      PropertyChanged(this, new PropertyChangedEventArgs("CorrectedHeading"));
+    }
+
 
     private void CallPropertyChangedForStaleProperties()
     {
       var properties =
         GetType()
           .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-          .Where(info => info.PropertyType == typeof(PropertyWithUpdateTime<double>));
+          .Where(info => info.PropertyType.GetInterfaces().Contains(typeof(IQuantityWithMetaData)));
 
       foreach (var info in properties)
       {
-        var property = (PropertyWithUpdateTime<double>)info.GetValue(this);
+        var property = (IQuantityWithMetaData)info.GetValue(this);
         if (null == property)
           continue;
 
@@ -78,27 +138,36 @@ namespace Experiment3.ViewModels
       switch (message.Name)
       {
         case MessageName.HDM:
-          {
-            var hdm = (HDM)message;
-            Heading = hdm.Heading;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Heading"));
-          }
+        {
+          var hdm = (HDM) message;
+          Heading = hdm.Heading;
+          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Heading"));
+        }
           break;
 
         case MessageName.RMC:
+        {
+          var rmc = (RMC) message;
+          if (rmc.SOG > MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
           {
-            var rmc = (RMC)message;
-            if (rmc.SOG > MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
-            {
-              Cog = rmc.TMG;
-              PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("COG"));
-            }
+            Cog = rmc.TMG;
+            Cog.Source = QuantityWithMetadata<double>.SourceType.External;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cog"));
+            Sog = rmc.SOG;
+            Sog.Source = QuantityWithMetadata<double>.SourceType.External;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Sog"));
+            OnUpdateCog();
           }
+        }
           break;
-
-
-
       }
+      if (message is IHasPosition)
+      {
+        QuantityWithMetadata<Coordinate> c = (Coordinate) (message as IHasPosition).Position;
+        c.Source = QuantityWithMetadata<Coordinate>.SourceType.External;
+        OnUpdatePosition(c);
+      }
+
       UpdateLastMessageDictionary(message);
     }
 
@@ -116,42 +185,17 @@ namespace Experiment3.ViewModels
       }
     }
 
-    public class PropertyWithUpdateTime<T>
-    {
-      private T _value;
+    public QuantityWithMetadata<double> Heading { get; private set; }
 
-      public T Value
-      {
-        get { return _value; }
-        set { _value = value; LastUpdate = DateTime.Now; }
-      }
+    public QuantityWithMetadata<double> Cog { get; private set; }
 
-      public bool IsStale => !LastUpdate.HasValue || DateTime.Now - LastUpdate > UpdateStaleTime;
+    public QuantityWithMetadata<double> Sog { get; private set; }
 
-      public DateTime? LastUpdate { get; private set; }
+    public double MeanDeviation { get; private set; }
 
-      public bool UIToldItsStale { get; set; }
+    public ulong SampleCount { get; private set; }
 
-      public static implicit operator PropertyWithUpdateTime<T>(T value)
-      {
-        return new PropertyWithUpdateTime<T>() { Value = value };
-      }
-
-      public static implicit operator T(PropertyWithUpdateTime<T> data)
-      {
-        return data.Value;
-      }
-    }
-
-    public PropertyWithUpdateTime<double> Heading { get; private set; }
-
-    public PropertyWithUpdateTime<double> Cog { get; private set; }
-
-    public PropertyWithUpdateTime<double> MeanDeviation { get; private set; }
-
-    public PropertyWithUpdateTime<double> SampleCount { get; private set; }
-
-    public PropertyWithUpdateTime<double> CorrectedHeading { get; private set; }
+    public QuantityWithMetadata<double> CorrectedHeading { get; private set; }
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -162,32 +206,7 @@ namespace Experiment3.ViewModels
     }
   }
 
-  internal class DataWithUpdateTimeConverter<T> : IValueConverter
-  {
-    public object Convert(object value, Type targetType,
-      object parameter, System.Globalization.CultureInfo culture)
-    {
-      var d = value as Stats.PropertyWithUpdateTime<T>;
-      if (d == null)
-      {
-        return "(null)";
-      }
 
-      if (d.IsStale)
-        return "Stale";
 
-      return $"{d.Value:F3}";
-    }
 
-    public object ConvertBack(object value, Type targetType,
-      object parameter, System.Globalization.CultureInfo culture)
-    {
-      throw new NotImplementedException();
-    }
-  }
-
-  internal class DoubleWithUpdateTimeConverter : DataWithUpdateTimeConverter<double>
-  {
-
-  }
 }

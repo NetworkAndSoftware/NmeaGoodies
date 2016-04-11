@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageFormatting.cs" />
     <Compile Include="Messages\APB.cs" />
     <Compile Include="CommandNameAttribute.cs" />
     <Compile Include="Constants\MessageName.cs" />
@@ -72,7 +73,7 @@
     <Compile Include="Messages\Interfaces\IHasDateAndTime.cs" />
     <Compile Include="Messages\Interfaces\IMightHaveTime.cs" />
     <Compile Include="Messages\Interfaces\IHasPosition.cs" />
-    <Compile Include="Messages\Interfaces\Position.cs" />
+    <Compile Include="Position.cs" />
     <Compile Include="Messages\MessageBase.cs" />
     <Compile Include="Communications\MessageDispatcher.cs" />
     <Compile Include="Messages\RMC.cs" />
@@ -90,6 +91,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Geometry\Geometry.csproj">
+      <Project>{c5b7ba90-f19e-4d90-b12e-3a6bde329dc0}</Project>
+      <Name>Geometry</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

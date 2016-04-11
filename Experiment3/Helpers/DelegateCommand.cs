@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Experiment3
+namespace Experiment3.Helpers
 {
   internal class DelegateCommand<T> : System.Windows.Input.ICommand where T : class
   {
@@ -58,6 +58,6 @@ namespace Experiment3
       _execute();
     }
 
-    public event EventHandler CanExecuteChanged;
+    public event EventHandler CanExecuteChanged { add {} remove {} }
   }
 }

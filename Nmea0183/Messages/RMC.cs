@@ -77,7 +77,7 @@ namespace Nmea0183.Messages
       DateTime = DateTime?.Add(time.TimeOfDay) ?? time;
     }
 
-    Status = ParseOneLetterEnumByValue<Flag>(parts[1]);
+    Status = MessageFormatting.ParseOneLetterEnumByValue<Flag>(parts[1]);
       Position = new Position(parts[2], parts[3], parts[4], parts[5]);
     SOG = float.Parse(parts[6]);
     TMG = float.Parse(parts[7]);
@@ -86,10 +86,10 @@ namespace Nmea0183.Messages
       MagneticVariation = float.Parse(parts[9]);
 
     if (!string.IsNullOrWhiteSpace(parts[10]))
-      MagneticVariationDirection = ParseOneLetterEnumByValue<EastWest>(parts[10]);
+      MagneticVariationDirection = MessageFormatting.ParseOneLetterEnumByValue<EastWest>(parts[10]);
 
     if (parts.Length > 11 && !string.IsNullOrWhiteSpace(parts[11]))
-      Mode = ParseOneLetterEnumByValue<FixMode>(parts[11]);
+      Mode = MessageFormatting.ParseOneLetterEnumByValue<FixMode>(parts[11]);
   }
 
   protected override string CommandBody
@@ -97,9 +97,9 @@ namespace Nmea0183.Messages
     get
     {
       string s = 
-        $"{FormatTime()},{F(Status)},{Position},{SOG:F3},{TMG:F3},{FormatDate()},{MagneticVariation:F3},{F(MagneticVariationDirection)}";
+        $"{FormatTime()},{MessageFormatting.F(Status)},{Position},{SOG:F3},{TMG:F3},{FormatDate()},{MagneticVariation:F3},{MessageFormatting.F(MagneticVariationDirection)}";
       if (0 != (int) Mode)
-        s = s + $",{F(Mode)}";
+        s = s + $",{MessageFormatting.F(Mode)}";
       return s;
     }
   }

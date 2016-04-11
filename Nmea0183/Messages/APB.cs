@@ -36,17 +36,17 @@ namespace Nmea0183.Messages
     internal APB(string talkedId, string[] parts) : base(talkedId)
     {
       XTE = double.Parse(parts[2]);
-      SteerTurn = ParseOneLetterEnumByValue<Turn>(parts[3]);
-      XteUnits = ParseOneLetterEnumByValue<Units>(parts[4]);
-      ArrivalCircular = ParseOneLetterEnumByValue<Flag>(parts[5]);
-      ArrivalPerpendicular = ParseOneLetterEnumByValue<Flag>(parts[6]);
+      SteerTurn = MessageFormatting.ParseOneLetterEnumByValue<Turn>(parts[3]);
+      XteUnits = MessageFormatting.ParseOneLetterEnumByValue<Units>(parts[4]);
+      ArrivalCircular = MessageFormatting.ParseOneLetterEnumByValue<Flag>(parts[5]);
+      ArrivalPerpendicular = MessageFormatting.ParseOneLetterEnumByValue<Flag>(parts[6]);
       BOD = double.Parse(parts[7]);
-      BodMagneticOrTrue = ParseOneLetterEnumByValue<MagneticOrTrue>(parts[8]);
+      BodMagneticOrTrue = MessageFormatting.ParseOneLetterEnumByValue<MagneticOrTrue>(parts[8]);
       DestinationWayPointId = int.Parse(parts[9]);
       Bearing = double.Parse(parts[10]);
-      BearingMagneticOrTrue = ParseOneLetterEnumByValue<MagneticOrTrue>(parts[11]);
+      BearingMagneticOrTrue = MessageFormatting.ParseOneLetterEnumByValue<MagneticOrTrue>(parts[11]);
       Heading = double.Parse(parts[12]);
-      HeadingMagneticOrTrue = ParseOneLetterEnumByValue<MagneticOrTrue>(parts[13]);
+      HeadingMagneticOrTrue = MessageFormatting.ParseOneLetterEnumByValue<MagneticOrTrue>(parts[13]);
     }
 
     public Turn SteerTurn { get; set; }

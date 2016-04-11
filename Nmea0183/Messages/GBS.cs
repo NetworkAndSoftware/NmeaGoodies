@@ -92,7 +92,7 @@ namespace Nmea0183.Messages
 
     private string FormatTime()
     {
-      return Time?.ToString(DATETIME_HHMMSSfff) ?? string.Empty;
+      return Time?.ToString(TIMESPAN_HHMMSSfff) ?? string.Empty;
     }
   }
 }

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Experiment3
+namespace Experiment3.Helpers
 {
   public class EnumMatchToBooleanConverter : IValueConverter
   {

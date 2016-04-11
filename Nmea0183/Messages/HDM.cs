@@ -19,10 +19,10 @@ namespace Nmea0183.Messages
     internal HDM(string talkedId, string[] parts) : base(talkedId)
     {
       Heading = double.Parse(parts[0]);
-      Type =  ParseOneLetterEnumByValue<MagneticOrTrue>(parts[1]);
+      Type = MessageFormatting.ParseOneLetterEnumByValue<MagneticOrTrue>(parts[1]);
     }
 
-    protected override string CommandBody => $"{Heading:F3},{F(Type)}";
+    protected override string CommandBody => $"{Heading:F3},{MessageFormatting.F(Type)}";
 
   }
 }

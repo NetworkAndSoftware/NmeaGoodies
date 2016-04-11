@@ -65,13 +65,13 @@ namespace Nmea0183.Messages
     {
       Time = TimeSpan.ParseExact(parts[0], TIMESPAN_HHMMSSfff, DateTimeFormatInfo.InvariantInfo);
       Position = new Position(parts[1], parts[2], parts[3], parts[4]);
-      FixQuality = ParseOneLetterEnumByValue<FixQuality>(parts[5]);
+      FixQuality = MessageFormatting.ParseOneLetterEnumByValue<FixQuality>(parts[5]);
       TrackedSatelliteCount = int.Parse(parts[6]);
       HorizontalDilution = float.Parse(parts[7]);
       Altitude = float.Parse(parts[8]);
-      AltitudeUnit = ParseOneLetterEnumByValue<AltitudeUnit>(parts[9]);
+      AltitudeUnit = MessageFormatting.ParseOneLetterEnumByValue<AltitudeUnit>(parts[9]);
       MeanSeaLevel = float.Parse(parts[10]);
-      MeanSeaLevelUnit = ParseOneLetterEnumByValue<AltitudeUnit>(parts[11]);
+      MeanSeaLevelUnit = MessageFormatting.ParseOneLetterEnumByValue<AltitudeUnit>(parts[11]);
       if (!string.IsNullOrWhiteSpace(parts[12]))
         TimeSinceLastDGPSFix = TimeSpan.FromSeconds(int.Parse(parts[12]));
       if (!string.IsNullOrWhiteSpace(parts[13]))
@@ -85,14 +85,11 @@ namespace Nmea0183.Messages
         var parts = new List<string>
         {
           FormatTime(),
-          Position.ToString(),
-          F(FixQuality),
+          Position.ToString(), MessageFormatting.F(FixQuality),
           $"{TrackedSatelliteCount:D2}",
           $"{HorizontalDilution:F1}",
-          $"{Altitude:F1}",
-          F(AltitudeUnit),
-          $"{MeanSeaLevel:F1}",
-          F(MeanSeaLevelUnit),
+          $"{Altitude:F1}", MessageFormatting.F(AltitudeUnit),
+          $"{MeanSeaLevel:F1}", MessageFormatting.F(MeanSeaLevelUnit),
           TimeSinceLastDGPSFix.HasValue ? ((int) TimeSinceLastDGPSFix.Value.TotalSeconds).ToString() : string.Empty,
           DGPSStationId.ToString()
         };
@@ -104,7 +101,7 @@ namespace Nmea0183.Messages
 
     private string FormatTime()
     {
-      return Time?.ToString(DATETIME_HHMMSSfff) ?? string.Empty;
+      return Time?.ToString(TIMESPAN_HHMMSSfff) ?? string.Empty;
     }
   }
 }
