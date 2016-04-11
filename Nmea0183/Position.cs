@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Geometry;
 using Nmea0183.Messages;
 using Nmea0183.Messages.Enum;
@@ -7,6 +8,7 @@ namespace Nmea0183
 {
   public class Position
   {
+    private static Regex _regexCoordinateElement = new Regex(@"^(\d+)(\d{2}.\d+)$");
     public double Latitude { get; set; }
     public NorthSouth LatitudeHemisphere { get; set; }
     public double Longitude { get; set; }
@@ -18,16 +20,36 @@ namespace Nmea0183
 
     public Position(string lat, string ns, string lon, string ew)
     {
-      Latitude = double.Parse(lat) / 100;
+      Latitude = ParseNmeaCoordinateElement(lat);
       LatitudeHemisphere = MessageFormatting.ParseOneLetterEnumByValue<NorthSouth>(ns);
-      Longitude = double.Parse(lon) / 100;
+      Longitude = ParseNmeaCoordinateElement(lon);
       LongitudeHemisphere = MessageFormatting.ParseOneLetterEnumByValue<EastWest>(ew);
+    }
+
+    private static double ParseNmeaCoordinateElement(string s)
+    {
+      var match = _regexCoordinateElement.Match(s);
+
+      if (!match.Success)
+        throw new FormatException("Invalid position in message.");
+
+      int degrees = int.Parse(match.Groups[1].Value);
+      double minutes = double.Parse(match.Groups[2].Value);
+
+      return degrees + minutes/60;
+    }
+
+    private static string FormatCoordinateElement(double d)
+    {
+      int degrees = (int) d;
+      double minutes = 60*d%60;
+      return degrees.ToString("D2") + minutes.ToString("00.####");
     }
 
     public override string ToString()
     {
       return
-        $"{(100 * Latitude):F3},{MessageFormatting.F(LatitudeHemisphere)},{(100 * Longitude): F3},{MessageFormatting.F(LongitudeHemisphere)}";
+        $"{FormatCoordinateElement(Latitude)},{MessageFormatting.F(LatitudeHemisphere)},{FormatCoordinateElement(Longitude)},{MessageFormatting.F(LongitudeHemisphere)}";
     }
 
     public static implicit operator Coordinate(Position position)

@@ -19,6 +19,8 @@ namespace GeometricTests
       private static readonly Coordinate MammasHuis = new Coordinate(Latitude.FromDegrees(51, 57, 49.22),
          Longitude.FromDegrees(-4, 30, 2.66));
 
+      private static readonly Coordinate TsatsuCondos = new Coordinate(Latitude.FromDegrees(49, 1, 24.30), Longitude.FromDegrees(123, 6, 6.47));
+
       [TestMethod]
       public void ShouldCalculateDistance()
       {
@@ -43,7 +45,11 @@ namespace GeometricTests
          course = Ourhouse.InitialCourse(MammasHuis);
 
          Assert.IsTrue(course.Degrees > 28 && course.Degrees < 32);
-      }
+
+        course = Ourhouse.InitialCourse(TsatsuCondos);
+
+        Assert.IsTrue(course.Degrees > 290 && course.Degrees < 310);
+    }
 
       [TestMethod]
       public void ShouldVectorRhumbWell()

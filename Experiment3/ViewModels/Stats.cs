@@ -18,7 +18,9 @@ namespace Experiment3.ViewModels
   internal class Stats : INotifyPropertyChanged
   {
     private const double MINIMUM_SPEED_FOR_VALID_CALCULATIONS = 1;
-    
+    private readonly TimeSpan _minimumElapsedtimeForCalculations = TimeSpan.FromMilliseconds(100);
+    private readonly Length _minimumDistanceForCalculations = Length.FromMeters(.001); // one millimeter
+
     public Stats()
     {
       MessageDispatcher.IncomingMessage += OnIncomingMessage;
@@ -43,10 +45,16 @@ namespace Experiment3.ViewModels
         {
           var angulardistance = ((Coordinate) coordinate).Distance(_lastposition);
           var distance = Ball.EarthSurfaceApproximation.Distance(angulardistance).NauticalMiles();
-          var elapsed = DateTime.UtcNow - _lastposition.Updated;
-          // ReSharper disable once PossibleInvalidOperationException
-          Sog = distance/elapsed.Value.TotalHours;
-          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Sog"));
+
+          if (distance >= _minimumDistanceForCalculations.NauticalMiles())
+          {
+            var elapsed = DateTime.UtcNow - _lastposition.Updated;
+            if (elapsed.HasValue && elapsed.Value >= _minimumElapsedtimeForCalculations)
+            {
+              Sog = distance/elapsed.Value.TotalHours;
+              PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Sog"));
+            }
+          }
         }
 
       if (null == Cog || Cog.Source != QuantityWithMetadata<double>.SourceType.External || Cog.IsStale)
@@ -54,12 +62,18 @@ namespace Experiment3.ViewModels
         // Try to calculate Cog from position data
         if (null != _lastposition && !_lastposition.IsStale)
         {
-          if (Sog > MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
+          var angulardistance = ((Coordinate)coordinate).Distance(_lastposition);
+          var distance = Ball.EarthSurfaceApproximation.Distance(angulardistance).NauticalMiles();
+
+          if (distance >= _minimumDistanceForCalculations.NauticalMiles())
           {
-            var cog = _lastposition.Value.InitialCourse(coordinate);
-            Cog = cog.Degrees;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cog"));
-            OnUpdateCog();
+            if (null != Sog && Sog > MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
+            {
+              var cog = _lastposition.Value.InitialCourse(coordinate);
+              Cog = cog.Degrees;
+              PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cog"));
+              OnUpdateCog();
+            }
           }
         }
       }
@@ -131,6 +145,7 @@ namespace Experiment3.ViewModels
     }
 
     private readonly Dictionary<MessageName, Tuple<MessageBase, DateTime>> _lastMessageByType = new Dictionary<MessageName, Tuple<MessageBase, DateTime>>();
+    
 
     private void OnIncomingMessage(MessageBase message)
     {
