@@ -28,10 +28,7 @@ namespace Nmea0183.Messages
     }
 
     public Flag Status { get; set; }      // Void indicates receiver error
-    public double Latitude { get; set; }
-    public NorthSouth LatitudeHemisphere { get; set; }
-    public double Longitude { get; set; }
-    public EastWest LongitudeHemisphere { get; set; }
+    public Position Position { get; set; }
     /// <summary>
     /// Speed over ground in knots
     /// </summary>
@@ -47,7 +44,7 @@ namespace Nmea0183.Messages
     public FixMode Mode { get; set; }
 
     public RMC(string talkerId) : base(talkerId)
-    { 
+    { Position = new Position();
     }
 
   /// <summary>
@@ -81,10 +78,7 @@ namespace Nmea0183.Messages
     }
 
     Status = ParseOneLetterEnumByValue<Flag>(parts[1]);
-    Latitude = float.Parse(parts[2]);
-    LatitudeHemisphere = ParseOneLetterEnumByValue<NorthSouth>(parts[3]);
-    Longitude = float.Parse(parts[4]);
-    LongitudeHemisphere = ParseOneLetterEnumByValue<EastWest>(parts[5]);
+      Position = new Position(parts[2], parts[3], parts[4], parts[5]);
     SOG = float.Parse(parts[6]);
     TMG = float.Parse(parts[7]);
 
@@ -103,7 +97,7 @@ namespace Nmea0183.Messages
     get
     {
       string s = 
-        $"{FormatTime()},{F(Status)},{Latitude:F3},{F(LatitudeHemisphere)},{Longitude:F3},{F(LongitudeHemisphere)},{SOG:F3},{TMG:F3},{FormatDate()},{MagneticVariation:F3},{F(MagneticVariationDirection)}";
+        $"{FormatTime()},{F(Status)},{Position},{SOG:F3},{TMG:F3},{FormatDate()},{MagneticVariation:F3},{F(MagneticVariationDirection)}";
       if (0 != (int) Mode)
         s = s + $",{F(Mode)}";
       return s;
@@ -120,7 +114,7 @@ namespace Nmea0183.Messages
       return DateTime?.ToString(DATETIME_HHMMSSfff, DateTimeFormatInfo.InvariantInfo) ?? string.Empty;
     }
 
-}
+  }
 
 
 }

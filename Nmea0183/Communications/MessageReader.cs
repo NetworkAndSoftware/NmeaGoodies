@@ -8,32 +8,29 @@ using Nmea0183.Messages;
 
 namespace Nmea0183.Communications
 {
-
   /// <summary>
-  /// Reads and dispatches messages. 
-  /// 
-  /// Offers pub/sub
-  /// 
-  /// TODO: This should use an ioc pattern
+  ///   Reads and dispatches messages.
+  ///   Offers pub/sub
+  ///   TODO: This should use an ioc pattern
   /// </summary>
   public class MessageReader
   {
     private const int QUEUE_MAX_LENGTH = 256;
-    
+
+    private static MessageReader _instance;
+
     public readonly Queue<MessageBase> Messages = new Queue<MessageBase>(QUEUE_MAX_LENGTH);
-
-    static MessageReader _instance;
-
-    public static MessageReader Instance => _instance ?? (_instance = new MessageReader());
 
     private MessageReader()
     {
       Task.Factory.StartNew(KeepReading);
     }
 
+    public static MessageReader Instance => _instance ?? (_instance = new MessageReader());
+
     private void KeepReading()
     {
-      using (StreamReader reader = new StreamReader(Connector.Instance.Stream, Encoding.UTF8))
+      using (var reader = new StreamReader(Connector.Instance.Stream, Encoding.UTF8))
       {
         string line;
         while ((line = reader.ReadLine()) != null)
@@ -50,15 +47,14 @@ namespace Nmea0183.Communications
 
               Messages.Enqueue(message);
             }
-
           }
           catch (FormatException x)
-          { Trace.WriteLine("Discarding message that can't be parse. Exception was:");
+          {
+            Trace.WriteLine("Discarding message that can't be parse. Exception was:");
             Trace.WriteLine(x);
           }
         }
       }
     }
-
   }
 }

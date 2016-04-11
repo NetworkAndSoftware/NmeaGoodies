@@ -72,6 +72,7 @@
     <Compile Include="Messages\Interfaces\IHasDateAndTime.cs" />
     <Compile Include="Messages\Interfaces\IMightHaveTime.cs" />
     <Compile Include="Messages\Interfaces\IHasPosition.cs" />
+    <Compile Include="Messages\Interfaces\Position.cs" />
     <Compile Include="Messages\MessageBase.cs" />
     <Compile Include="Communications\MessageDispatcher.cs" />
     <Compile Include="Messages\RMC.cs" />

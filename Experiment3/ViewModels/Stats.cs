@@ -11,35 +11,55 @@ using Experiment3.Annotations;
 using Nmea0183.Communications;
 using Nmea0183.Constants;
 using Nmea0183.Messages;
+using Nmea0183.Messages.Enum;
 
 namespace Experiment3.ViewModels
 {
   internal class Stats : INotifyPropertyChanged
   {
     private const int MINIMUM_SPEED_FOR_VALID_CALCULATIONS = 1;
-    private static readonly TimeSpan _updateStaleTime = TimeSpan.FromSeconds(3);
+    private static readonly TimeSpan UpdateStaleTime = TimeSpan.FromSeconds(3);
 
     public Stats()
     {
       MessageDispatcher.IncomingMessage += OnIncomingMessage;
-      var timer = new DispatcherTimer() {Interval = TimeSpan.FromSeconds(1)};
+      var timer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
       timer.Tick += TimerTick;
       timer.Start();
     }
 
 
-    private bool IsStale(MessageName message) => !_lastMessageByType.ContainsKey(message) || DateTime.UtcNow - _lastMessageByType[message].Item2 > _updateStaleTime;
-
-
-
+    private bool IsStale(MessageName message) => !_lastMessageByType.ContainsKey(message) || DateTime.UtcNow - _lastMessageByType[message].Item2 > UpdateStaleTime;
 
     private void TimerTick(object sender, EventArgs e)
     {
-      var properties = GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(info => info.PropertyType == typeof(PropertyWithUpdateTime<double>));
-      
+      CallPropertyChangedForStaleProperties();
+    }
+
+    private void GotNewPosition()
+    {
+      if (null == Cog || Cog.IsStale)
+      {
+        // Try to calculate Cog from position data
+
+        // TODO:
+        // - Get angle from new position compared to last position
+        // - update Cog
+
+        // - update last position
+      }
+    }
+
+    private void CallPropertyChangedForStaleProperties()
+    {
+      var properties =
+        GetType()
+          .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+          .Where(info => info.PropertyType == typeof(PropertyWithUpdateTime<double>));
+
       foreach (var info in properties)
       {
-        var property = (PropertyWithUpdateTime<double>) info.GetValue(this);
+        var property = (PropertyWithUpdateTime<double>)info.GetValue(this);
         if (null == property)
           continue;
 
@@ -68,12 +88,15 @@ namespace Experiment3.ViewModels
         case MessageName.RMC:
           {
             var rmc = (RMC)message;
-            Cog = rmc.TMG;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("COG"));
+            if (rmc.SOG > MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
+            {
+              Cog = rmc.TMG;
+              PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("COG"));
+            }
           }
           break;
 
-        
+
 
       }
       UpdateLastMessageDictionary(message);
@@ -100,10 +123,10 @@ namespace Experiment3.ViewModels
       public T Value
       {
         get { return _value; }
-        set { _value = value; LastUpdate = DateTime.Now;}
+        set { _value = value; LastUpdate = DateTime.Now; }
       }
 
-      public bool IsStale => !LastUpdate.HasValue || DateTime.Now - LastUpdate > _updateStaleTime;
+      public bool IsStale => !LastUpdate.HasValue || DateTime.Now - LastUpdate > UpdateStaleTime;
 
       public DateTime? LastUpdate { get; private set; }
 
@@ -111,7 +134,7 @@ namespace Experiment3.ViewModels
 
       public static implicit operator PropertyWithUpdateTime<T>(T value)
       {
-        return new PropertyWithUpdateTime<T>() {Value = value};
+        return new PropertyWithUpdateTime<T>() { Value = value };
       }
 
       public static implicit operator T(PropertyWithUpdateTime<T> data)
@@ -165,6 +188,6 @@ namespace Experiment3.ViewModels
 
   internal class DoubleWithUpdateTimeConverter : DataWithUpdateTimeConverter<double>
   {
-    
+
   }
 }

@@ -45,10 +45,7 @@ namespace Nmea0183.Messages
   public class GGA : MessageBase, IHasPosition, IMightHaveTime
   {
     public TimeSpan? Time { get; set; }
-    public double Latitude { get; set; }
-    public NorthSouth LatitudeHemisphere { get; set; }
-    public double Longitude { get; set; }
-    public EastWest LongitudeHemisphere { get; set; }
+    public Position Position { get; set; }
     public FixQuality FixQuality { get; set; }
     public int TrackedSatelliteCount { get; set; }
     public float HorizontalDilution { get; set; }
@@ -61,16 +58,13 @@ namespace Nmea0183.Messages
 
     public GGA(string talkerId) : base(talkerId)
     {
-
+      Position = new Position();
     }
 
     internal GGA(string talkerId, string[] parts) : base(talkerId)
     {
       Time = TimeSpan.ParseExact(parts[0], TIMESPAN_HHMMSSfff, DateTimeFormatInfo.InvariantInfo);
-      Latitude = float.Parse(parts[1]);
-      LatitudeHemisphere = ParseOneLetterEnumByValue<NorthSouth>(parts[2]);
-      Longitude = float.Parse(parts[3]);
-      LongitudeHemisphere = ParseOneLetterEnumByValue<EastWest>(parts[4]);
+      Position = new Position(parts[1], parts[2], parts[3], parts[4]);
       FixQuality = ParseOneLetterEnumByValue<FixQuality>(parts[5]);
       TrackedSatelliteCount = int.Parse(parts[6]);
       HorizontalDilution = float.Parse(parts[7]);
@@ -91,7 +85,7 @@ namespace Nmea0183.Messages
         var parts = new List<string>
         {
           FormatTime(),
-          $"{Latitude:F3},{F(LatitudeHemisphere)},{Longitude: F3},{F(LongitudeHemisphere)}",
+          Position.ToString(),
           F(FixQuality),
           $"{TrackedSatelliteCount:D2}",
           $"{HorizontalDilution:F1}",

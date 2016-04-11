@@ -26,28 +26,23 @@ namespace Nmea0183.Messages
   // ReSharper disable once InconsistentNaming
   public class GLL : MessageBase, IHasPosition, IMightHaveTime, IHasStatus
   {
-    public double Latitude { get; set; }
-    public NorthSouth LatitudeHemisphere { get; set; }
-    public double Longitude { get; set; }
-    public EastWest LongitudeHemisphere { get; set; }
+    public Position Position { get; set; }
     public TimeSpan? Time { get; set; }
     public Flag Status { get; set; }
 
     public GLL(string talkerId) : base(talkerId)
     {
+      Position = new Position();
     }
 
     internal GLL(string talkerId, string[] parts) : base(talkerId)
     {
-      Latitude = float.Parse(parts[0]);
-      LatitudeHemisphere = ParseOneLetterEnumByValue<NorthSouth>(parts[1]);
-      Longitude = float.Parse(parts[2]);
-      LongitudeHemisphere = ParseOneLetterEnumByValue<EastWest>(parts[3]);
+      Position = new Position(parts[0], parts[1], parts[2], parts[3]);
       Time = TimeSpan.ParseExact(parts[4], TIMESPAN_HHMMSSfff, DateTimeFormatInfo.InvariantInfo);
       Status = ParseOneLetterEnumByValue<Flag>(parts[5]);
     }
 
-    protected override string CommandBody => $"{Latitude:F3},{F(LatitudeHemisphere)},{Longitude:F3},{F(LongitudeHemisphere)},{FormatTime()},{F(Status)}";
+    protected override string CommandBody => $"{Position},{FormatTime()},{F(Status)}";
 
     private string FormatTime()
     {

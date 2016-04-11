@@ -102,14 +102,16 @@ namespace Nmea0183.Messages
 
     }
 
-    protected T ParseOneLetterEnumByValue<T>(string s)
+    // TODO: this needs to go somewhere else
+    public static T ParseOneLetterEnumByValue<T>(string s)
     {
       if (string.IsNullOrWhiteSpace(s))
         return default(T);
       return (T) System.Enum.Parse(typeof (T), ((int) s[0]).ToString());
     }
 
-    protected T ParseEnum<T>(string s)
+    // TODO: this needs to go somewhere else
+    public T ParseEnum<T>(string s)
     {
       if (string.IsNullOrWhiteSpace(s))
         return default(T);
@@ -120,9 +122,10 @@ namespace Nmea0183.Messages
     /// Formats enum value as letter
     /// </summary>
     /// <returns></returns>
-    protected string F(object enumvalue)
+    // TODO: this needs to go somewhere else
+    public static string F(object enumvalue)
     { 
-      return 0 == (int) enumvalue ? String.Empty : Convert.ToChar(enumvalue).ToString();
+      return 0 == (int) enumvalue ? string.Empty : Convert.ToChar(enumvalue).ToString();
     }
 
   }
