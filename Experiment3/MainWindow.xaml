@@ -9,8 +9,10 @@
         xmlns:helpers="clr-namespace:Experiment3.Helpers"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525" WindowStyle="None" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
-        AllowsTransparency="True" MouseDown="Window_MouseDown"
+        AllowsTransparency="True" MouseDown="Window_MouseDown" Topmost="True" 
+        Deactivated="Main_Deactivated"  
         >
+
     <Window.DataContext>
         <viewModels:MainViewModel/>
     </Window.DataContext>
@@ -29,7 +31,6 @@
         <KeyBinding Key="A" Command="{Binding Path=AutopilotControl.EnabledCommand}" />
         <KeyBinding Key="X" Command="{Binding Path=WindowCloseCommand}" CommandParameter="{Binding ElementName=Main}" />
         <KeyBinding Key="Q" Command="{Binding Path=WindowCloseCommand}" CommandParameter="{Binding ElementName=Main}" />
-        <KeyBinding Key="B" Command="{Binding Path=SendtoBackCommand}" CommandParameter="{Binding ElementName=Main}"></KeyBinding>
         <KeyBinding Key="H" Command="{Binding Path=HelpCommand}" CommandParameter="{Binding ElementName=Main}"></KeyBinding>
         <KeyBinding Key="F1" Command="{Binding Path=HelpCommand}" CommandParameter="{Binding ElementName=Main}"></KeyBinding>
     </Window.InputBindings>
@@ -47,7 +48,7 @@
                     <WrapPanel Background="White">
                         <Label Content="Course"/>
                         <Button Content="&lt;" Command="{Binding Path=AutopilotControl.LeftCommand}" />
-                        <TextBox Name="TextBox"  Width="80" Text="{Binding Path=AutopilotControl.Heading, Mode=TwoWay}" Margin="0,0,1,0" />
+                        <TextBox Name="TextBox"  Width="80" Text="{Binding Path=AutopilotControl.Heading, Mode=TwoWay}" Margin="0,0,1,0" IsEnabled="False" />
                         <Button Content="&gt;" Command="{Binding Path=AutopilotControl.RightCommand}" />
                         <WrapPanel >
                             <RadioButton GroupName="RadioBodMagnetic" IsChecked="{Binding Path=AutopilotControl.MagneticOrTrue, Mode=TwoWay, Converter={StaticResource EnumConverter}, ConverterParameter=Magnetic}">magnetic</RadioButton>

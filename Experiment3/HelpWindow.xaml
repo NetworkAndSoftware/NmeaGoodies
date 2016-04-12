@@ -21,9 +21,6 @@
                 <Run Text="Left/Right:&#x9;When the autopilot is engaged, the left and right arrow keys can be used to decrease and increase the set heading."/>
             </Paragraph>
             <Paragraph>
-                <Run Text="B:&#x9;&#x9;Temporarily send window to background (window will come back to the foreground after 20 or 30 seconds)."/>
-            </Paragraph>
-            <Paragraph>
                 <Run Text="H or F1: &#x9;Help &#x9;(this window)"/>
             </Paragraph>
             <Paragraph>

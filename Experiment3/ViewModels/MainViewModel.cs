@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Experiment3.Helpers;
 using Nmea0183.Communications;
 using Nmea0183.Constants;
@@ -31,18 +33,13 @@ namespace Experiment3.ViewModels
       AutopilotControl.MagneticOrTrue = MagneticOrTrue.Magnetic;
     }
 
-
     public DelegateCommand<Window> WindowCloseCommand { get; } = new DelegateCommand<Window>(o => { o.Close(); });
 
-    public DelegateCommand<Window> SendtoBackCommand { get; } = new DelegateCommand<Window>(SendWindowToBackgroundForAWhile);
-
-    private static void SendWindowToBackgroundForAWhile(Window window)
+    public DelegateCommand<Window> HelpCommand { get; } = new DelegateCommand<Window>((w) =>
     {
-      throw new System.NotImplementedException();
-    }
+      var h = new HelpWindow();
+      h.Show();
+    });
 
-    public DelegateCommand<Window> HelpCommand { get; } = new DelegateCommand<Window>((w) => { var h = new HelpWindow(); h.Show(); })
-
-  ;
   }
 }
