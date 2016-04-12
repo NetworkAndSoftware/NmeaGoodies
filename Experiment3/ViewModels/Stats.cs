@@ -21,6 +21,8 @@ namespace Experiment3.ViewModels
     private readonly TimeSpan _minimumElapsedtimeForCalculations = TimeSpan.FromMilliseconds(100);
     private readonly Length _minimumDistanceForCalculations = Length.FromMeters(.001); // one millimeter
 
+    private const double MAGNETIC_VARIATION = 16.45; // + E, -W, like OpenCPN
+
     public Stats()
     {
       MessageDispatcher.IncomingMessage += OnIncomingMessage;
@@ -69,8 +71,8 @@ namespace Experiment3.ViewModels
           {
             if (null != Sog && Sog > MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
             {
-              var cog = _lastposition.Value.InitialCourse(coordinate);
-              Cog = cog.Degrees;
+              var truecog = _lastposition.Value.InitialCourse(coordinate);
+              Cog = truecog.Degrees - MAGNETIC_VARIATION;
               PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cog"));
               OnUpdateCog();
             }

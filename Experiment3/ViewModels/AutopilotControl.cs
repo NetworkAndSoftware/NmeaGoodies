@@ -35,16 +35,6 @@ namespace Experiment3.ViewModels
     private readonly RepeatingSender _periodicalMessageSender;
     private string _talkedId;
 
-    public string TalkedId
-    {
-      get { return _talkedId; }
-      set
-      {
-        _talkedId = value; if (_enabled)
-          UpdateApb();
-      }
-    }
-
     public double Heading
     {
       get { return _heading; }
@@ -86,7 +76,6 @@ namespace Experiment3.ViewModels
 
     private void UpdateApb()
     {
-      _apb.TalkerId = TalkedId;
       _apb.Heading = Heading;
       _apb.HeadingMagneticOrTrue = MagneticOrTrue;
       _apb.Bearing = Heading;

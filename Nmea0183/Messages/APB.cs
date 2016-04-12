@@ -26,6 +26,7 @@ namespace Nmea0183.Messages
     public APB(string talkerId) : base(talkerId)
     { ArrivalPerpendicular = Flag.Void;
       ArrivalCircular = Flag.Void;
+      XteUnits = Units.NauticalMiles;
     }
 
     /// <summary>
