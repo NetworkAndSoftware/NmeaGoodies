@@ -82,6 +82,7 @@ namespace Nmea0183.Communications
         {
           case SocketError.ConnectionAborted:
           case SocketError.NotConnected:
+          case SocketError.ConnectionReset:
             TriggerSocketConnecting();
             break;
 
@@ -103,7 +104,7 @@ namespace Nmea0183.Communications
     {
       get
       {
-        if (null == _socketWithStream)
+        if (null == _socketWithStream || !_socketWithStream._socket.Connected || !_socketWithStream._Stream.CanRead)
         {
           TriggerSocketConnecting();
           _tryingtoconnect.Wait();

@@ -1,20 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
+using Experiment3.Helpers;
 using Experiment3.ViewModels;
 using Nmea0183.Communications;
 
@@ -32,6 +20,7 @@ namespace Experiment3
       InitializeComponent();
       MessageDispatcher.IncomingMessage += Console.WriteLine;
       WpfMessagePoller.SetInterval(POLLINGINTERVAL);
+      SystemIdleHook.Enabled = true;
     }
 
     private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -44,11 +33,12 @@ namespace Experiment3
 
     private void Main_Deactivated(object sender, EventArgs e)
     {
-      Topmost = false;
-      var t = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(10)};
+      var t = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1)};
       t.Tick += (o, args) =>
       {
-        Topmost = true;
+        if (SystemIdleHook.IdleTime <= TimeSpan.FromSeconds(2))
+          return;
+
         Activate();
         t.Stop();
       };

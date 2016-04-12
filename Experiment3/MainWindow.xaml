@@ -9,7 +9,7 @@
         xmlns:helpers="clr-namespace:Experiment3.Helpers"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525" WindowStyle="None" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
-        AllowsTransparency="True" MouseDown="Window_MouseDown" Topmost="True" 
+        AllowsTransparency="True" MouseDown="Window_MouseDown" 
         Deactivated="Main_Deactivated"  
         >
 

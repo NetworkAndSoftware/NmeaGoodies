@@ -30,29 +30,41 @@ namespace Nmea0183.Communications
 
     private void KeepReading()
     {
-      using (var reader = new StreamReader(Connector.Instance.Stream, Encoding.UTF8))
+      while (true)
       {
-        string line;
-        while ((line = reader.ReadLine()) != null)
+        try
         {
-          try
+          using (var reader = new StreamReader(Connector.Instance.Stream, Encoding.UTF8))
           {
-            var message = MessageBase.Parse(line);
-
-            lock (Messages)
+            string line;
+            while ((line = reader.ReadLine()) != null)
             {
-              // if Queue is full simply throw away old messages
-              while (Messages.Count >= QUEUE_MAX_LENGTH)
-                Messages.Dequeue();
+              try
+              {
+                var message = MessageBase.Parse(line);
 
-              Messages.Enqueue(message);
+                lock (Messages)
+                {
+                  // if Queue is full simply throw away old messages
+                  while (Messages.Count >= QUEUE_MAX_LENGTH)
+                    Messages.Dequeue();
+
+                  Messages.Enqueue(message);
+                }
+              }
+              catch (FormatException x)
+              {
+                Trace.WriteLine("Discarding message that can't be parse. Exception was:");
+                Trace.WriteLine(x);
+              }
             }
           }
-          catch (FormatException x)
-          {
-            Trace.WriteLine("Discarding message that can't be parse. Exception was:");
-            Trace.WriteLine(x);
-          }
+        }
+        catch (Exception x)
+        {
+          var message = "Exception in read loop:" + x + "\n\nResuming...";
+          Trace.WriteLine(message);
+          Console.WriteLine(message);
         }
       }
     }

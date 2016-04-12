@@ -34,7 +34,6 @@ namespace Experiment3.ViewModels
     private MagneticOrTrue _magneticOrTrue;
     private bool _enabled;
     private readonly RepeatingSender _periodicalMessageSender;
-    private string _talkedId;
 
     public double Heading
     {

@@ -3,12 +3,15 @@ using System.Windows.Threading;
 
 namespace Nmea0183.Communications
 {
+  /// <summary>
+  /// Have the MessageDispatcher poll periodically
+  /// </summary>
   public static class WpfMessagePoller
   {
     private static readonly DispatcherTimer Timer;
 
     /// <summary>
-    /// Reference this dummy method to cause the static class to be created
+    /// Sets the polling interval 
     /// </summary>
     public static void SetInterval(int interval)  
     { Timer.Stop();
