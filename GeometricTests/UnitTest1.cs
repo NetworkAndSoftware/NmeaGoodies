@@ -8,18 +8,18 @@ namespace GeometricTests
    public class UnitTest1
    {
       private static readonly Coordinate Ourhouse = new Coordinate(Latitude.FromDegrees(49, 0, 51.55),
-         Longitude.FromDegrees(123, 4, 39.87));
+         Longitude.FromDegrees(-123, 4, 39.87));
 
       private static readonly Coordinate PointRobertsMarina = new Coordinate(Latitude.FromDegrees(48, 58, 44.02),
-         Longitude.FromDegrees(123, 4, 4.09));
+         Longitude.FromDegrees(-123, 4, 4.09));
 
       private static readonly Coordinate PottsburgCrossing = new Coordinate(Latitude.FromDegrees(30, 15, 45.57),
-         Longitude.FromDegrees(81, 35, 30.09));
+         Longitude.FromDegrees(-81, 35, 30.09));
 
       private static readonly Coordinate MammasHuis = new Coordinate(Latitude.FromDegrees(51, 57, 49.22),
-         Longitude.FromDegrees(-4, 30, 2.66));
+         Longitude.FromDegrees(4, 30, 2.66));
 
-      private static readonly Coordinate TsatsuCondos = new Coordinate(Latitude.FromDegrees(49, 1, 24.30), Longitude.FromDegrees(123, 6, 6.47));
+      private static readonly Coordinate TsatsuCondos = new Coordinate(Latitude.FromDegrees(49, 1, 24.30), Longitude.FromDegrees(-123, 6, 6.47));
 
       [TestMethod]
       public void ShouldCalculateDistance()
@@ -49,7 +49,13 @@ namespace GeometricTests
         course = Ourhouse.InitialCourse(TsatsuCondos);
 
         Assert.IsTrue(course.Degrees > 290 && course.Degrees < 310);
-    }
+
+        Coordinate coordinate1 = new Coordinate(Latitude.FromDegrees(48.9706241666667), Longitude.FromDegrees(-123.063063833333));
+        Coordinate coordinate2 = new Coordinate(Latitude.FromDegrees(48.970644), Longitude.FromDegrees(-123.063088666667));
+
+        course = coordinate1.InitialCourse(coordinate2);
+        Assert.IsTrue(290 < course.Degrees && course.Degrees < 330);
+      }
 
       [TestMethod]
       public void ShouldVectorRhumbWell()

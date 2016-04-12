@@ -44,13 +44,13 @@ namespace Geometry
     /// <param name="coordinate">Target coordinate that we want to travel to</param>
     /// <returns>initial bearing</returns>
     public Bearing InitialCourse(Coordinate coordinate)
-    { 
+    {
       // TODO: resolve edge case: close to the poles
       // if (Latitude.Cos() < .0001)
       //  return Latitude.Hemisphere == Latitude.HemisphereType.North ? Bearing.South : Bearing.North;
 
-      return new Bearing(Angle.Atan2((Longitude - coordinate.Longitude).Sin() * coordinate.Latitude.Cos(), Latitude.Cos()*coordinate.Latitude.Sin() -
-                                                                               Latitude.Sin()*coordinate.Latitude.Cos()*(Longitude - coordinate.Longitude).Cos()));
+      return new Bearing(Angle.Atan2((coordinate.Longitude - Longitude).Sin() * coordinate.Latitude.Cos(), Latitude.Cos()*coordinate.Latitude.Sin() -
+                                                                                                           Latitude.Sin()*coordinate.Latitude.Cos()*(coordinate.Longitude - Longitude).Cos()));
     }
 
     public Coordinate GreatCircle(AngularVector angularVector)
