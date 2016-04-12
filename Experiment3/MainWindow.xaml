@@ -29,6 +29,9 @@
         <KeyBinding Key="A" Command="{Binding Path=AutopilotControl.EnabledCommand}" />
         <KeyBinding Key="X" Command="{Binding Path=WindowCloseCommand}" CommandParameter="{Binding ElementName=Main}" />
         <KeyBinding Key="Q" Command="{Binding Path=WindowCloseCommand}" CommandParameter="{Binding ElementName=Main}" />
+        <KeyBinding Key="B" Command="{Binding Path=SendtoBackCommand}" CommandParameter="{Binding ElementName=Main}"></KeyBinding>
+        <KeyBinding Key="H" Command="{Binding Path=HelpCommand}" CommandParameter="{Binding ElementName=Main}"></KeyBinding>
+        <KeyBinding Key="F1" Command="{Binding Path=HelpCommand}" CommandParameter="{Binding ElementName=Main}"></KeyBinding>
     </Window.InputBindings>
 
     <StackPanel>

@@ -1,0 +1,40 @@
+﻿<Window x:Class="Experiment3.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Experiment3"
+        mc:Ignorable="d"
+        Title="Help" Height="268" Width="386">
+    <RichTextBox Margin="0,0,-349,-262" HorizontalAlignment="Left" Width="641">
+        <FlowDocument>
+            <Paragraph>
+                <Run FontWeight="Bold" Text="Help for Experiment3"/>
+            </Paragraph>
+            <Paragraph>
+                <Run Text="Hotkeys:"/>
+            </Paragraph>
+            <Paragraph>
+                <Run Text="A: &#x9;&#x9;Start sending NMEA messages to set the autopilot to the current heading."/>
+            </Paragraph>
+            <Paragraph>
+                <Run Text="Left/Right:&#x9;When the autopilot is engaged, the left and right arrow keys can be used to decrease and increase the set heading."/>
+            </Paragraph>
+            <Paragraph>
+                <Run Text="B:&#x9;&#x9;Temporarily send window to background (window will come back to the foreground after 20 or 30 seconds)."/>
+            </Paragraph>
+            <Paragraph>
+                <Run Text="H or F1: &#x9;Help &#x9;(this window)"/>
+            </Paragraph>
+            <Paragraph>
+                <Run Text="Q or X:&#x9;&#x9;Quit."/>
+            </Paragraph>
+            <Paragraph>
+                <Run/>
+                <LineBreak/>
+                <LineBreak/>
+            </Paragraph>
+        </FlowDocument>
+
+    </RichTextBox>
+</Window>

@@ -33,5 +33,16 @@ namespace Experiment3.ViewModels
 
 
     public DelegateCommand<Window> WindowCloseCommand { get; } = new DelegateCommand<Window>(o => { o.Close(); });
+
+    public DelegateCommand<Window> SendtoBackCommand { get; } = new DelegateCommand<Window>(SendWindowToBackgroundForAWhile);
+
+    private static void SendWindowToBackgroundForAWhile(Window window)
+    {
+      throw new System.NotImplementedException();
+    }
+
+    public DelegateCommand<Window> HelpCommand { get; } = new DelegateCommand<Window>((w) => { var h = new HelpWindow(); h.Show(); })
+
+  ;
   }
 }

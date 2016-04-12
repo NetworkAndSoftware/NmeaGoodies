@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Configuration;
 using System.Globalization;
 using System.Runtime;
@@ -86,7 +87,7 @@ namespace Experiment3.ViewModels
 
     private void Left()
     {
-      Heading--;
+      Heading = Math.Round(Heading) - 1;
 
       while (Heading < 0)
         Heading += 360;
@@ -96,7 +97,7 @@ namespace Experiment3.ViewModels
 
     private void Right()
     {
-      Heading++;
+      Heading = Math.Round(Heading) + 1;
 
       while (Heading >= 360)
         Heading -= 360;

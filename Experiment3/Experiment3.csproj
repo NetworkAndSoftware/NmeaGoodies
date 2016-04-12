@@ -59,12 +59,19 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\DelegateCommand.cs" />
+    <Compile Include="HelpWindow.xaml.cs">
+      <DependentUpon>HelpWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModels\AutopilotControl.cs" />
     <Compile Include="Helpers\QuantityConverter.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Models\QuantityWithMetadata.cs" />
     <Compile Include="ViewModels\Stats.cs" />
+    <Page Include="HelpWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
