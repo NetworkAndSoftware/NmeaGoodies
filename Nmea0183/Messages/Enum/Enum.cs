@@ -7,12 +7,6 @@ namespace Nmea0183.Messages.Enum
     Left = 'L',
   };
 
-  public enum MagneticOrTrue
-  {
-    Magnetic = 'M',
-    True = 'T'
-  };
-
   public enum NorthSouth
   {
     North = 'N',

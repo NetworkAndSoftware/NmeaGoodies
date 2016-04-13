@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MagneticContext.cs" />
     <Compile Include="MessageFormatting.cs" />
     <Compile Include="Messages\APB.cs" />
     <Compile Include="CommandNameAttribute.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Messages\GGA.cs" />
     <Compile Include="Messages\GLL.cs" />
     <Compile Include="Messages\HDM.cs" />
+    <Compile Include="CompassValue.cs" />
     <Compile Include="Messages\Interfaces\IHasStatus.cs" />
     <Compile Include="Messages\Interfaces\IHasDateAndTime.cs" />
     <Compile Include="Messages\Interfaces\IMightHaveTime.cs" />

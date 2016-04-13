@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 using Experiment3.Annotations;
 using Experiment3.Helpers;
+using Nmea0183;
 using Nmea0183.Communications;
 using Nmea0183.Messages;
 using Nmea0183.Messages.Enum;
@@ -15,9 +16,14 @@ namespace Experiment3.ViewModels
 {
   internal class AutopilotControl : INotifyPropertyChanged
   {
-    public AutopilotControl()
+    private readonly MagneticContext _magneticContext;
+
+
+    public AutopilotControl(MagneticContext magneticContext)
     {
+      _magneticContext = magneticContext;
       _apb = new APB("SN");
+      _heading = new MagneticMessageCompassValue(0);
       EnabledCommand = new DelegateCommand(() => Enabled = !Enabled);
       RightCommand = new DelegateCommand(Right);
       LeftCommand = new DelegateCommand(Left);
@@ -30,41 +36,65 @@ namespace Experiment3.ViewModels
     public DelegateCommand EnabledCommand { get; }
 
     private readonly APB _apb;
-    private double _heading;
-    private MagneticOrTrue _magneticOrTrue;
+    private IMessageCompassValue _heading;
     private bool _enabled;
     private readonly RepeatingSender _periodicalMessageSender;
 
-    public double Heading
+    public IMessageCompassValue Heading
     {
       get { return _heading; }
       set
       {
         _heading = value;
-        if (Enabled)
-          UpdateApb();
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Heading"));
+        InvokePropertyChanged();
       }
     }
 
-    public MagneticOrTrue MagneticOrTrue
+    private void InvokePropertyChanged()
     {
-      get { return _magneticOrTrue; }
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HeadingValue"));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HeadingMagnetic"));
+    }
+
+
+    public double? HeadingValue
+    {
+      get { return _heading?.Value; }
       set
       {
-        _magneticOrTrue = value;
+        if (null == value)
+          _heading = null;
+        else
+          _heading.Value = value.Value;
+
         if (Enabled)
           UpdateApb();
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MagneticOrTrue"));
       }
     }
-    
+
+    public bool HeadingMagnetic
+    {
+      get { return _heading.IsMagnetic; }
+      set
+      {
+        if (value ==_heading.IsMagnetic)
+          return;
+
+        _heading = value ? (IMessageCompassValue) _magneticContext.Magnetic(_heading) : _magneticContext.True(_heading);
+        
+        if (Enabled)
+          UpdateApb();
+
+        InvokePropertyChanged();
+      }
+    }
+
     public bool Enabled
     {
       get { return _enabled; }
       set
       {
-        _enabled = value; 
+        _enabled = value;
         UpdateApb();
         if (_enabled)
           _periodicalMessageSender.Start();
@@ -77,31 +107,32 @@ namespace Experiment3.ViewModels
     private void UpdateApb()
     {
       _apb.Heading = Heading;
-      _apb.HeadingMagneticOrTrue = MagneticOrTrue;
       _apb.Bearing = Heading;
-      _apb.BearingMagneticOrTrue = MagneticOrTrue;
       _apb.BOD = Heading;
-      _apb.BodMagneticOrTrue = MagneticOrTrue;
     }
 
     private void Left()
     {
-      Heading = Math.Round(Heading) - 1;
+      if (!Enabled) return;
 
-      while (Heading < 0)
-        Heading += 360;
+      Heading.Value = Math.Round(Heading.Value) - 1;
 
-      //TextBox.Text = Heading.ToString(CultureInfo.InvariantCulture);
+      while (Heading.Value < 0)
+        Heading.Value += 360;
+
+      InvokePropertyChanged();
     }
 
     private void Right()
     {
-      Heading = Math.Round(Heading) + 1;
+      if (!Enabled) return;
 
-      while (Heading >= 360)
-        Heading -= 360;
+      Heading.Value = Math.Round(Heading.Value) + 1;
 
-      //TextBox.Text = Heading.ToString(CultureInfo.InvariantCulture);
+      while (Heading.Value >= 360)
+        Heading.Value -= 360;
+
+      InvokePropertyChanged();
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -112,4 +143,6 @@ namespace Experiment3.ViewModels
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
   }
+
+
 }

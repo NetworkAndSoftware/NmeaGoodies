@@ -57,27 +57,28 @@ namespace GeometricTests
         Assert.IsTrue(290 < course.Degrees && course.Degrees < 330);
       }
 
-      [TestMethod]
-      public void ShouldVectorRhumbWell()
-      {
-         var vector = new AngularVector(Ourhouse, PointRobertsMarina);
+     [TestMethod]
+     public void ShouldVectorRhumbWell()
+     {
+       var vector = new AngularVector(Ourhouse, PointRobertsMarina);
 
-         Coordinate newlocation = Ourhouse.Rhumb(vector);
+       Coordinate newlocation = Ourhouse.Rhumb(vector);
 
-         Length distance = Ball.EarthSurfaceApproximation.Distance(newlocation, PointRobertsMarina);
+       Length distance = Ball.EarthSurfaceApproximation.Distance(newlocation, PointRobertsMarina);
 
-         Assert.IsTrue(distance < Length.FromMeters(.5));
+       Assert.IsTrue(distance < Length.FromMeters(2000));
+       Assert.IsTrue(distance > Length.FromMeters(1000));
 
-         vector = new AngularVector(Ourhouse, PottsburgCrossing);
+       vector = new AngularVector(Ourhouse, PottsburgCrossing);
 
-         newlocation = Ourhouse.Rhumb(vector);
+       newlocation = Ourhouse.Rhumb(vector);
 
-         distance = Ball.EarthSurfaceApproximation.Distance(newlocation, PottsburgCrossing);
+       distance = Ball.EarthSurfaceApproximation.Distance(newlocation, PottsburgCrossing);
 
-         Assert.IsFalse(distance < Length.FromMeters(.5));
-      }
+       Assert.IsFalse(distance < Length.FromMeters(.5));
+     }
 
-      [TestMethod]
+     [TestMethod]
       public void ShouldVectorGreatCirclesWell()
       {
          var vector = new AngularVector(Ourhouse, PointRobertsMarina);
@@ -86,16 +87,19 @@ namespace GeometricTests
 
          Length distance = Ball.EarthSurfaceApproximation.Distance(newlocation, PointRobertsMarina);
 
-         Assert.IsTrue(distance < Length.FromMeters(.5));
+         Assert.IsTrue(distance > Length.FromMeters(1000));
+          Assert.IsTrue(distance < Length.FromMeters(5000));
+      
 
-         vector = new AngularVector(Ourhouse, MammasHuis);
+      vector = new AngularVector(Ourhouse, MammasHuis);
 
          newlocation = Ourhouse.GreatCircle(vector);
 
          distance = Ball.EarthSurfaceApproximation.Distance(newlocation, MammasHuis);
 
-         Assert.IsTrue(distance < Length.FromMeters(.5));
-      }
+         Assert.IsTrue(distance > Length.FromMeters(6e6));
+        Assert.IsTrue(distance < Length.FromMeters(10e6));
+    }
 
       [TestMethod]
       public void ShouldCalculateDeviations()

@@ -1,5 +1,4 @@
-﻿using System;
-using Nmea0183.Constants;
+﻿using Nmea0183.Constants;
 using Nmea0183.Messages.Enum;
 
 namespace Nmea0183.Messages
@@ -9,8 +8,7 @@ namespace Nmea0183.Messages
   // ReSharper disable once InconsistentNaming
   public class HDM : MessageBase
   {
-    public double Heading { get; set; }
-    public MagneticOrTrue Type { get; set; }
+    public IMessageCompassValue Heading { get; set; }
 
     public HDM(string talkerId) : base(talkerId)
     {
@@ -18,11 +16,10 @@ namespace Nmea0183.Messages
 
     internal HDM(string talkedId, string[] parts) : base(talkedId)
     {
-      Heading = double.Parse(parts[0]);
-      Type = MessageFormatting.ParseOneLetterEnumByValue<MagneticOrTrue>(parts[1]);
+      Heading = MessageCompassValueFactory.FromMessageParts(parts[0], parts[1]);
     }
 
-    protected override string CommandBody => $"{Heading:F3},{MessageFormatting.F(Type)}";
+    protected override string CommandBody => Heading.ToString("F3");
 
   }
 }

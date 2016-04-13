@@ -36,7 +36,7 @@ namespace Nmea0183.Messages
     /// <summary>
     /// Track made good, in degrees True
     /// </summary>
-    public double TMG { get; set; }
+    public TrueMessageCompassValue TMG { get; set; }
     public double MagneticVariation { get; set; }
     public EastWest MagneticVariationDirection { get; set; }
 
@@ -78,11 +78,11 @@ namespace Nmea0183.Messages
     }
 
     Status = MessageFormatting.ParseOneLetterEnumByValue<Flag>(parts[1]);
-      Position = new Position(parts[2], parts[3], parts[4], parts[5]);
+    Position = new Position(parts[2], parts[3], parts[4], parts[5]);
     SOG = float.Parse(parts[6]);
-    TMG = float.Parse(parts[7]);
+    TMG = new TrueMessageCompassValue(double.Parse(parts[7]));
 
-    if (!string.IsNullOrWhiteSpace(parts[9]))
+      if (!string.IsNullOrWhiteSpace(parts[9]))
       MagneticVariation = float.Parse(parts[9]);
 
     if (!string.IsNullOrWhiteSpace(parts[10]))

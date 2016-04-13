@@ -18,18 +18,15 @@ namespace Experiment1
     public APB Apb { get; set; }
 
     public MainWindow()
-    {
+    { var heading = new MagneticMessageCompassValue(160);
       try
       {
         Apb = new APB("SN")  // Electronic Positioning System, other/general
         {
-          BOD = 160,
-          BodMagneticOrTrue = MagneticOrTrue.Magnetic,
-          Bearing = 160,
-          BearingMagneticOrTrue = MagneticOrTrue.Magnetic,
+          BOD = heading,
+          Bearing = heading,
           DestinationWayPointId = 1,
-          Heading = 160,
-          HeadingMagneticOrTrue = MagneticOrTrue.Magnetic,
+          Heading = heading,
           SteerTurn = Turn.Left,
           XTE = 0,
           XteUnits = Units.NauticalMiles,

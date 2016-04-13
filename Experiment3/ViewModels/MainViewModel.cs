@@ -1,25 +1,26 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Threading;
 using Experiment3.Helpers;
-using Nmea0183.Communications;
-using Nmea0183.Constants;
-using Nmea0183.Messages;
-using Nmea0183.Messages.Enum;
+using Nmea0183;
 
 namespace Experiment3.ViewModels
 {
   class MainViewModel
   {
+    private readonly MagneticContext _magneticContext = new MagneticContext(16.45);
+
     public MainViewModel()
     {
+      AutopilotControl = new AutopilotControl(_magneticContext);
+      Stats = new Stats(_magneticContext);
       Stats.PropertyChanged += SetAutopilotHeadingToIncomingHeading;
+
+      // TODO: Ugh.
+      WithMagneticContext.MagneticContext = _magneticContext;
     }
 
-    public Stats Stats { get; } = new Stats();
-    public AutopilotControl AutopilotControl { get; } = new AutopilotControl();
+    public Stats Stats { get; }
+    public AutopilotControl AutopilotControl { get; }
 
     private void SetAutopilotHeadingToIncomingHeading(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
     {
@@ -29,8 +30,7 @@ namespace Experiment3.ViewModels
       if ("Heading" != propertyChangedEventArgs.PropertyName)
         return;
 
-      AutopilotControl.Heading = Stats.Heading;
-      AutopilotControl.MagneticOrTrue = MagneticOrTrue.Magnetic;
+      AutopilotControl.Heading = Stats.Heading.Value;
     }
 
     public DelegateCommand<Window> WindowCloseCommand { get; } = new DelegateCommand<Window>(o => { o.Close(); });

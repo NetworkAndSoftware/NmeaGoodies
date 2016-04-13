@@ -15,21 +15,19 @@ namespace Nmea0183
       var expected = new APB("SN") // Electronic Positioning System, other/general
       {
         SteerTurn = Turn.Left,
-        BOD = 131,
-        BodMagneticOrTrue = MagneticOrTrue.Magnetic,
+        BOD = new MagneticMessageCompassValue(131),
         DestinationWayPointId = 1,
         XTE = 68,
         XteUnits = Units.NauticalMiles,
-        Bearing = 90,
-        BearingMagneticOrTrue = MagneticOrTrue.True,
-        Heading = 123,
-        HeadingMagneticOrTrue = MagneticOrTrue.Magnetic,
+        Bearing = new TrueMessageCompassValue(90),
+        Heading = new MagneticMessageCompassValue(123),
         ArrivalCircular = Flag.Void,
         ArrivalPerpendicular = Flag.Active
       };
 
       var actual = new APB("SN", "A,A,68.0000,L,N,V,A,131.0000,M,001,90.0000,T,123.0000,M".Split(','));
-      Assert.Equal(expected.BOD, actual.BOD);
+      Assert.Equal(expected.BOD.Value, actual.BOD.Value);
+      Assert.Equal(expected.BOD.IsMagnetic, actual.BOD.IsMagnetic);
       Assert.Equal(expected.ToString(), actual.ToString());
     }
 
@@ -42,18 +40,18 @@ namespace Nmea0183
         Status = Flag.Active,
         Position = new Position()
         {
-          Latitude = 49.00859,
+          Latitude = 49.01432,
           LatitudeHemisphere = NorthSouth.North,
-          Longitude = 123.04663,
+          Longitude = 123.07771,
           LongitudeHemisphere = EastWest.West,
         },
-        SOG = 0.111F,
-        TMG = 200.928F,
+        SOG = 0.111,
+        TMG = 200.928,
         // missing Magnetic Variation
         // missing Magnetic Variation sign
         // missing date and time
       };
-      var actual = new RMC("SN", ",A,4900.859,N,12304.663,W,0.111,200.928,,0.000,".Split(','));
+      var actual = new RMC("SN", ",A,4900.8592,N,12304.6626,W,0.111,200.928,,0.000,".Split(','));
       Assert.InRange(actual.Position.Latitude, expected.Position.Latitude - .00001, expected.Position.Latitude + .00001);
       Assert.Equal(expected.ToString(), actual.ToString());
 
@@ -71,18 +69,16 @@ namespace Nmea0183
     {
       var expected = new HDM("AP")
       {
-        Heading = 153.4,
-        Type = MagneticOrTrue.Magnetic
+        Heading = new MagneticMessageCompassValue(153.4),
       };
       var actual = (HDM) MessageBase.Parse("$APHDM,153.40,M*00");
 
-      Assert.Equal(expected.Heading, actual.Heading);
-      Assert.Equal(expected.Type, actual.Type);
-
+      Assert.Equal(expected.Heading.Value, actual.Heading.Value);
+      Assert.Equal(expected.Heading.IsMagnetic, actual.Heading.IsMagnetic);
+      Assert.Equal(expected.GetType(), actual.GetType());
       Assert.Equal(expected.ToString(), actual.ToString());
 
-      Assert.InRange(actual.Heading, 153.399999, 153.400001);
-
+      Assert.InRange(actual.Heading.Value, 153.399999, 153.400001);
     }
 
 
@@ -143,7 +139,7 @@ namespace Nmea0183
     {
       var onemilimeter = .001;
 
-      Coordinate actual = new Position("4900", "N", "12300", "W");
+      Coordinate actual = new Position("4900.0", "N", "12300.0", "W");
       var expected = new Coordinate(Latitude.FromDegrees(49), Longitude.FromDegrees(-123));
       Assert.InRange(DistanceInMeters(expected, actual), 0, onemilimeter); 
 
@@ -167,7 +163,7 @@ namespace Nmea0183
       expected = new Coordinate(Latitude.FromDegrees(49), Longitude.FromDegrees(123));
       Assert.InRange(DistanceInMeters(expected, actual), 0, 1);
 
-      Position pexpected = new Position("4900", "N", "12300", "W");
+      Position pexpected = new Position("4900.0", "N", "12300.0", "W");
       Position pactual = (Coordinate) pexpected; // explicit cast to Coordinate, then implicit back to Position
       Assert.InRange(pactual.Latitude, 48.9, 49.1);
       Assert.Equal(pactual.LatitudeHemisphere, NorthSouth.North);
