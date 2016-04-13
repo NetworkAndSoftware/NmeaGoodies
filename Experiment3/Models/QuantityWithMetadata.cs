@@ -45,7 +45,7 @@ namespace Experiment3.Models
 
     public bool IsStale => !Updated.HasValue || DateTime.UtcNow - Updated > Expiration;
 
-    public DateTime? Updated { get; private set; }
+    public DateTime? Updated { get; set; }
 
     // TODO: this shouldn't be here. It has nothing to do with the data itself. Move back to viewmodel
     public bool UIToldItsStale { get; set; }

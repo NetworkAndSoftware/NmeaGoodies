@@ -1,11 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Nmea0183.Messages;
 
 namespace Nmea0183.Communications
 {
   public static class MessageDispatcher
   {
-    public delegate void IncomingMessageHandler(MessageBase message);
+    public delegate void IncomingMessageHandler(MessageBase message, DateTime messagetime);
     public static event IncomingMessageHandler IncomingMessage;
 
     /// <summary>
@@ -18,7 +19,10 @@ namespace Nmea0183.Communications
       lock (messageReader.Messages)
       {
         while (messageReader.Messages.Any())
-          IncomingMessage?.Invoke(messageReader.Messages.Dequeue());
+        {
+          var tuple = messageReader.Messages.Dequeue();
+          IncomingMessage?.Invoke(tuple.Item1,tuple.Item2);
+        }
       }
     }
   }

@@ -169,7 +169,7 @@ namespace Experiment3.ViewModels
     }
 
 
-    private void OnIncomingMessage(MessageBase message)
+    private void OnIncomingMessage(MessageBase message, DateTime messagetime)
     {
       // ReSharper disable once SwitchStatementMissingSomeCases
       switch (message.Name)
@@ -203,6 +203,7 @@ namespace Experiment3.ViewModels
       {
         QuantityWithMetadata<Coordinate> c = (Coordinate) (message as IHasPosition).Position;
         c.Source = SourceType.External;
+        c.Updated = messagetime;
         OnUpdatePosition(c);
       }
 

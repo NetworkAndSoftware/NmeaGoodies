@@ -13,10 +13,10 @@ namespace Experiment3.Helpers
       if (d == null)
         return "(null)";
 
-      return d.IsStale ? "Stale" : Format(d);
+      return d.IsStale ? "Stale" : Format(d, (string) parameter);
     }
 
-    protected abstract string Format(T d);
+    protected abstract string Format(T d, string format);
 
     public object ConvertBack(object value, Type targetType,
       object parameter, System.Globalization.CultureInfo culture)
@@ -27,17 +27,17 @@ namespace Experiment3.Helpers
 
   internal class DoubleQuantityConverter : QuantityConverter<double>
   {
-    protected override string Format(double d)
+    protected override string Format(double d, string format)
     {
-      return $"{d:F3}";
+      return null == format ? $"{d:F3}" : d.ToString(format);
     }
   }
 
   internal class ULongQuantityConverter : QuantityConverter<ulong>
   {
-    protected override string Format(ulong d)
+    protected override string Format(ulong d, string format)
     {
-      return $"{d:F3}";
+      return null == format ? $"{d:F3}" : d.ToString(format);
     }
 
   }

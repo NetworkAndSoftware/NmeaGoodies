@@ -19,7 +19,7 @@ namespace Nmea0183.Communications
 
     private static MessageReader _instance;
 
-    public readonly Queue<MessageBase> Messages = new Queue<MessageBase>(QUEUE_MAX_LENGTH);
+    public readonly Queue<Tuple<MessageBase, DateTime>> Messages = new Queue<Tuple<MessageBase, DateTime>>(QUEUE_MAX_LENGTH);
 
     private MessageReader()
     {
@@ -49,12 +49,12 @@ namespace Nmea0183.Communications
                   while (Messages.Count >= QUEUE_MAX_LENGTH)
                     Messages.Dequeue();
 
-                  Messages.Enqueue(message);
+                  Messages.Enqueue(new Tuple<MessageBase, DateTime>(message, DateTime.UtcNow));
                 }
               }
               catch (FormatException x)
-              {
-                Trace.WriteLine("Discarding message that can't be parse. Exception was:");
+              { 
+                Trace.WriteLine("Discarding message that can't be parsed. Exception was:");
                 Trace.WriteLine(x);
               }
             }

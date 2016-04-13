@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Nmea0183.Constants;
-using Nmea0183.Messages.Enum;
 using Nmea0183.Messages.Interfaces;
 
 namespace Nmea0183.Messages
