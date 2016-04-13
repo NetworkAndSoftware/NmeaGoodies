@@ -57,8 +57,10 @@
                             <RadioButton GroupName="RadioBodMagnetic" IsChecked="{Binding Path=AutopilotControl.HeadingMagnetic, Mode=TwoWay}">magnetic</RadioButton>
                             <RadioButton GroupName="RadioBodMagnetic" IsChecked="{Binding Path=AutopilotControl.HeadingMagnetic, Mode=TwoWay, Converter={StaticResource NotConverter}}">true</RadioButton>
                         </WrapPanel>
+
                     </WrapPanel>
                     <CheckBox IsChecked="{Binding Path=AutopilotControl.Enabled, Mode=TwoWay}">Enabled (A)</CheckBox>
+                    <CheckBox IsChecked="{Binding Path=AutopilotControl.SendCurrentHeading, Mode=TwoWay}">Send Current Heading</CheckBox>
                 </StackPanel>
             </StackPanel>
         </Border>

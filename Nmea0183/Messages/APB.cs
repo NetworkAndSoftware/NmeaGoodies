@@ -50,6 +50,13 @@ namespace Nmea0183.Messages
 
     public int DestinationWayPointId { get; set; }
     
-    protected override string CommandBody => $"A,A,{XTE:F4},{Convert.ToChar(SteerTurn)},{Convert.ToChar(XteUnits)},{Convert.ToChar(ArrivalCircular)},{Convert.ToChar(ArrivalPerpendicular)},{BOD:F3},{DestinationWayPointId:D3},{Bearing:F4},{Heading:F4}";
+    protected override string CommandBody
+    {
+      get
+      {
+        return
+          $"A,A,{XTE:F4},{Convert.ToChar(SteerTurn)},{Convert.ToChar(XteUnits)},{Convert.ToChar(ArrivalCircular)},{Convert.ToChar(ArrivalPerpendicular)},{BOD.ToString("F3")},{DestinationWayPointId:D3},{Bearing.ToString("F3")},{Heading.ToString("F3")}";
+      }
+    }
   }
 }

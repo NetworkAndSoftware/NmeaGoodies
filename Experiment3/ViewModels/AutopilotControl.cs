@@ -28,7 +28,14 @@ namespace Experiment3.ViewModels
       RightCommand = new DelegateCommand(Right);
       LeftCommand = new DelegateCommand(Left);
 
-      _periodicalMessageSender = new RepeatingSender(onBeforeSend: (message) => _apb.SteerTurn = _apb.SteerTurn == Turn.Left ? Turn.Right : Turn.Left) { Message = _apb };
+      _periodicalMessageSender = new RepeatingSender(onBeforeSend: OnBeforeAPBSend) { Message = _apb };
+    }
+
+    private void OnBeforeAPBSend(MessageBase message)
+    {
+      _apb.SteerTurn = _apb.SteerTurn == Turn.Left ? Turn.Right : Turn.Left;
+      if (_sendCurrentHeading)
+        UpdateApb();
     }
 
     public DelegateCommand LeftCommand { get; }
@@ -39,6 +46,7 @@ namespace Experiment3.ViewModels
     private IMessageCompassValue _heading;
     private bool _enabled;
     private readonly RepeatingSender _periodicalMessageSender;
+    private bool _sendCurrentHeading;
 
     public IMessageCompassValue Heading
     {
@@ -96,11 +104,28 @@ namespace Experiment3.ViewModels
       {
         _enabled = value;
         UpdateApb();
-        if (_enabled)
-          _periodicalMessageSender.Start();
-        else
-          _periodicalMessageSender.Stop();
+        ControlPeriodicalMessageSender();
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Enabled"));
+      }
+    }
+
+    private void ControlPeriodicalMessageSender()
+    {
+      if (_enabled || _sendCurrentHeading)
+        _periodicalMessageSender.Start();
+      else
+        _periodicalMessageSender.Stop();
+    }
+
+    public bool SendCurrentHeading
+    {
+      get { return _sendCurrentHeading; }
+      set
+      {
+        _sendCurrentHeading = value; 
+        UpdateApb();
+        ControlPeriodicalMessageSender();
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SendCurrentHeading"));
       }
     }
 
