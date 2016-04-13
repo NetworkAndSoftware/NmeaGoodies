@@ -59,10 +59,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\NotConverter.cs" />
+    <Compile Include="Helpers\NumberFormatConverter.cs" />
     <Compile Include="Helpers\QuantityWithCompassValueConverter.cs" />
     <Compile Include="Helpers\SystemIdleHook.cs" />
     <Compile Include="Helpers\DelegateCommand.cs" />
-    <Compile Include="Helpers\CommandParameterConverter.cs" />
+    <Compile Include="Helpers\WithMagneticContext.cs" />
+    <Compile Include="Helpers\WindowCommand.cs" />
     <Compile Include="HelpWindow.xaml.cs">
       <DependentUpon>HelpWindow.xaml</DependentUpon>
     </Compile>

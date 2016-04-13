@@ -18,7 +18,7 @@ namespace Experiment3
     public MainWindow()
     {
       InitializeComponent();
-      MessageDispatcher.IncomingMessage += (message, datetime) => Console.WriteLine($"{datetime:r} {message}");
+      MessageDispatcher.IncomingMessage += (message, datetime) => Console.WriteLine($"{datetime:u} {message}");
       WpfMessagePoller.SetInterval(POLLINGINTERVAL);
       SystemIdleHook.Enabled = true;
     }
@@ -45,5 +45,9 @@ namespace Experiment3
       t.Start();
     }
 
+    private void Main_Loaded(object sender, RoutedEventArgs e)
+    {
+      Activate();
+    }
   }
 }

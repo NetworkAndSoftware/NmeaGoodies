@@ -27,26 +27,41 @@ namespace Experiment3.ViewModels
       EnabledCommand = new DelegateCommand(() => Enabled = !Enabled);
       RightCommand = new DelegateCommand(Right);
       LeftCommand = new DelegateCommand(Left);
-
+      MagneticCommand = new DelegateCommand(() => HeadingMagnetic = true);
+      TrueCommand = new DelegateCommand(() => HeadingMagnetic = false);
+      SetToHeadingCommand = new DelegateCommand(() => CopyCurrentHeading = !CopyCurrentHeading);
+      
       _periodicalMessageSender = new RepeatingSender(onBeforeSend: OnBeforeAPBSend) { Message = _apb };
     }
 
     private void OnBeforeAPBSend(MessageBase message)
     {
       _apb.SteerTurn = _apb.SteerTurn == Turn.Left ? Turn.Right : Turn.Left;
-      if (_sendCurrentHeading)
-        UpdateApb();
+      UpdateApb();
+      Console.WriteLine($"Sending {_apb}");
     }
+
+    private void UpdateApb()
+    {
+      _apb.Heading = Heading;
+      _apb.Bearing = Heading;
+      _apb.BOD = Heading;
+    }
+
 
     public DelegateCommand LeftCommand { get; }
     public DelegateCommand RightCommand { get; }
     public DelegateCommand EnabledCommand { get; }
+    public DelegateCommand MagneticCommand { get; }
+    public DelegateCommand TrueCommand { get; }
+    public DelegateCommand SetToHeadingCommand { get; }
+
 
     private readonly APB _apb;
     private IMessageCompassValue _heading;
     private bool _enabled;
     private readonly RepeatingSender _periodicalMessageSender;
-    private bool _sendCurrentHeading;
+    private bool _copyCurrentHeading;
 
     public IMessageCompassValue Heading
     {
@@ -74,9 +89,6 @@ namespace Experiment3.ViewModels
           _heading = null;
         else
           _heading.Value = value.Value;
-
-        if (Enabled)
-          UpdateApb();
       }
     }
 
@@ -89,9 +101,6 @@ namespace Experiment3.ViewModels
           return;
 
         _heading = value ? (IMessageCompassValue) _magneticContext.Magnetic(_heading) : _magneticContext.True(_heading);
-        
-        if (Enabled)
-          UpdateApb();
 
         InvokePropertyChanged();
       }
@@ -103,42 +112,28 @@ namespace Experiment3.ViewModels
       set
       {
         _enabled = value;
-        UpdateApb();
-        ControlPeriodicalMessageSender();
+        if (_enabled)
+          _periodicalMessageSender.Start();
+        else
+          _periodicalMessageSender.Stop();
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Enabled"));
       }
     }
 
-    private void ControlPeriodicalMessageSender()
+    public bool CopyCurrentHeading
     {
-      if (_enabled || _sendCurrentHeading)
-        _periodicalMessageSender.Start();
-      else
-        _periodicalMessageSender.Stop();
-    }
-
-    public bool SendCurrentHeading
-    {
-      get { return _sendCurrentHeading; }
+      get { return _copyCurrentHeading; }
       set
       {
-        _sendCurrentHeading = value; 
-        UpdateApb();
-        ControlPeriodicalMessageSender();
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SendCurrentHeading"));
+        _copyCurrentHeading = value; 
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CopyCurrentHeading"));
       }
-    }
-
-    private void UpdateApb()
-    {
-      _apb.Heading = Heading;
-      _apb.Bearing = Heading;
-      _apb.BOD = Heading;
     }
 
     private void Left()
     {
-      if (!Enabled) return;
+      if (!Enabled || CopyCurrentHeading)
+        return;
 
       Heading.Value = Math.Round(Heading.Value) - 1;
 
@@ -150,7 +145,8 @@ namespace Experiment3.ViewModels
 
     private void Right()
     {
-      if (!Enabled) return;
+      if (!Enabled || CopyCurrentHeading)
+        return;
 
       Heading.Value = Math.Round(Heading.Value) + 1;
 

@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525" WindowStyle="None" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         AllowsTransparency="True" MouseDown="Window_MouseDown" 
-        Deactivated="Main_Deactivated"  
+        Deactivated="Main_Deactivated" Loaded="Main_Loaded"  
         >
 
     <Window.DataContext>
@@ -22,20 +22,24 @@
     <Window.Resources>
         <helpers:EnumMatchToBooleanConverter x:Key="EnumConverter" />
         <helpers:DoubleQuantityConverter x:Key="DoubleQuantityConverter"/>
-        <helpers:NotConverter x:Key="NotConverter"/> 
-        <helpers:ULongQuantityConverter x:Key="ULongWithUpdateTimeConverter"/> 
+        <helpers:NotConverter x:Key="NotConverter"/>
+        <helpers:ULongQuantityConverter x:Key="ULongWithUpdateTimeConverter"/>
         <helpers:QuantityWithCompassValueAsTrueConverter x:Key="QuantityWithCompassValueAsTrueConverter"/>
         <helpers:QuantityWithCompassValueAsMagneticConverter x:Key="QuantityWithCompassValueAsMagneticConverter"/>
+        <helpers:NumberFormatConverter x:Key="NumberFormatConverter"/>
     </Window.Resources>
 
     <Window.InputBindings>
         <KeyBinding Key="Left" Command="{Binding Path=AutopilotControl.LeftCommand}" />
         <KeyBinding Key="Right" Command="{Binding Path=AutopilotControl.RightCommand}" />
         <KeyBinding Key="A" Command="{Binding Path=AutopilotControl.EnabledCommand}" />
-        <KeyBinding Key="X" Command="{Binding Path=WindowCloseCommand}" CommandParameter="{Binding ElementName=Main}" />
-        <KeyBinding Key="Q" Command="{Binding Path=WindowCloseCommand}" CommandParameter="{Binding ElementName=Main}" />
-        <KeyBinding Key="H" Command="{Binding Path=HelpCommand}" CommandParameter="{Binding ElementName=Main}"></KeyBinding>
-        <KeyBinding Key="F1" Command="{Binding Path=HelpCommand}" CommandParameter="{Binding ElementName=Main}"></KeyBinding>
+        <KeyBinding Key="X" Command="{Binding Path=WindowCloseCommand}"/>
+        <KeyBinding Key="Q" Command="{Binding Path=WindowCloseCommand}"/>
+        <KeyBinding Key="C" Command="{Binding Path=AutopilotControl.SetToHeadingCommand}"></KeyBinding>
+        <KeyBinding Key="M" Command="{Binding Path=AutopilotControl.MagneticCommand}"></KeyBinding>
+        <KeyBinding Key="T" Command="{Binding Path=AutopilotControl.TrueCommand}"></KeyBinding>
+        <KeyBinding Key="H" Command="{Binding Path=HelpCommand}"></KeyBinding>
+        <KeyBinding Key="F1" Command="{Binding Path=HelpCommand}"></KeyBinding>
     </Window.InputBindings>
 
     <StackPanel>
@@ -51,7 +55,7 @@
                     <WrapPanel Background="White">
                         <Label Content="Course"/>
                         <Button Content="&lt;" Command="{Binding Path=AutopilotControl.LeftCommand}" />
-                        <TextBox Name="TextBox" Text="{Binding Path=AutopilotControl.HeadingValue, Mode=TwoWay, StringFormat=F1}" Margin="0,0,1,0" IsEnabled="False" />
+                        <TextBox Name="TextBox" Text="{Binding Path=AutopilotControl.HeadingValue, Mode=TwoWay, StringFormat=F1}" Margin="0,0,1,0" IsReadOnly="true" />
                         <Button Content="&gt;" Command="{Binding Path=AutopilotControl.RightCommand}" />
                         <WrapPanel >
                             <RadioButton GroupName="RadioBodMagnetic" IsChecked="{Binding Path=AutopilotControl.HeadingMagnetic, Mode=TwoWay}">magnetic</RadioButton>
@@ -60,7 +64,7 @@
 
                     </WrapPanel>
                     <CheckBox IsChecked="{Binding Path=AutopilotControl.Enabled, Mode=TwoWay}">Enabled (A)</CheckBox>
-                    <CheckBox IsChecked="{Binding Path=AutopilotControl.SendCurrentHeading, Mode=TwoWay}">Send Current Heading</CheckBox>
+                    <CheckBox IsChecked="{Binding Path=AutopilotControl.CopyCurrentHeading, Mode=TwoWay}">Send Current Heading (C)</CheckBox>
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -106,7 +110,7 @@
                     <Label Grid.Column="2" Grid.Row="2" Content="{Binding Path=Stats.Cog,Mode=OneWay,Converter={StaticResource QuantityWithCompassValueAsMagneticConverter}}"></Label>
                     <Label Grid.Column="2" Grid.Row="3" Content="{Binding Path=Stats.CorrectedHeading,Mode=OneWay, Converter={StaticResource QuantityWithCompassValueAsMagneticConverter}}"></Label>
 
-                    <Label Grid.Column="1" Grid.Row="4" Content="{Binding Path=Stats.MeanDeviation,Mode=OneWay,StringFormat=F3}" Grid.ColumnSpan="2"></Label>
+                    <Label Grid.Column="1" Grid.Row="4" Content="{Binding Path=Stats.MeanDeviation,Mode=OneWay, Converter={StaticResource NumberFormatConverter}, ConverterParameter=F3}" Grid.ColumnSpan="2"></Label>
                     <Label Grid.Column="1" Grid.Row="5" Content="{Binding Path=Stats.SampleCount,Mode=OneWay}" Grid.ColumnSpan="2"></Label>
                     <Label Grid.Column="1" Grid.Row="6" Content="{Binding Path=Stats.Sog,Mode=OneWay,Converter={StaticResource DoubleQuantityConverter}, ConverterParameter=F1}" Grid.ColumnSpan="2"></Label>
 

@@ -124,8 +124,8 @@ namespace Experiment3.Helpers
       {
         var ret = UnhookWindowsHookEx(_hHookMouse);
         if (ret == false)
-        {
-          throw new ApplicationException("UnhookWindowsHookEx() failed for the mouse");
+        { // don't care
+          // throw new ApplicationException("UnhookWindowsHookEx() failed for the mouse");
         }
         _hHookMouse = 0;
       }
@@ -134,8 +134,8 @@ namespace Experiment3.Helpers
       {
         var ret = UnhookWindowsHookEx(_hHookKbd);
         if (ret == false)
-        {
-          throw new ApplicationException("UnhookWindowsHookEx() failed for the keyboard");
+        { // don't care
+          // throw new ApplicationException("UnhookWindowsHookEx() failed for the keyboard");
         }
         _hHookKbd = 0;
       }

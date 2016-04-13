@@ -5,33 +5,55 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Experiment3"
         mc:Ignorable="d"
-        Title="Help" Height="268" Width="386">
-    <RichTextBox Margin="0,0,-349,-262" HorizontalAlignment="Left" Width="641">
-        <FlowDocument>
-            <Paragraph>
-                <Run FontWeight="Bold" Text="Help for Experiment3"/>
-            </Paragraph>
-            <Paragraph>
-                <Run Text="Hotkeys:"/>
-            </Paragraph>
-            <Paragraph>
-                <Run Text="A: &#x9;&#x9;Start sending NMEA messages to set the autopilot to the current heading."/>
-            </Paragraph>
-            <Paragraph>
-                <Run Text="Left/Right:&#x9;When the autopilot is engaged, the left and right arrow keys can be used to decrease and increase the set heading."/>
-            </Paragraph>
-            <Paragraph>
-                <Run Text="H or F1: &#x9;Help &#x9;(this window)"/>
-            </Paragraph>
-            <Paragraph>
-                <Run Text="Q or X:&#x9;&#x9;Quit."/>
-            </Paragraph>
-            <Paragraph>
-                <Run/>
-                <LineBreak/>
-                <LineBreak/>
-            </Paragraph>
-        </FlowDocument>
+        Title="Help" Height="268" Width="386" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" ResizeMode="CanResizeWithGrip" WindowStyle="ToolWindow">
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="Close"></KeyBinding>
+    </Window.InputBindings>
+    <ScrollViewer>
+        <RichTextBox Margin="0,0,-349,-262" HorizontalAlignment="Left" IsReadOnly="True">
+            <FlowDocument>
+                <Paragraph>
+                    <Run FontWeight="Bold" Text="Help for Experiment3"/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="Hotkeys:"/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="H or F1: &#x9;Help &#x9;(this window)"/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="A: &#x9;&#x9;Start sending NMEA messages to set the autopilot to the current heading."/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="C:&#x9;&#x9;When autopilot enabled, keep sending messages to set autopilot heading to current heading."/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="T:&#x9;&#x9;Send "/>
+                    <Run FontWeight="Bold" Text="true"/>
+                    <Run Text=" headings to autopilot"/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="M:&#x9;&#x9;Send "/>
+                    <Run FontWeight="Bold" Text="magnetic"/>
+                    <Run Text=" headings to autopilot"/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="Left/Right:&#x9;When the autopilot is engaged, the left and right arrow keys can be used to decrease and increase the set heading."/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="Q or X:&#x9;&#x9;Quit."/>
+                </Paragraph>
+                <Paragraph>
+                    <Run/>
+                </Paragraph>
+                <Paragraph>
+                    <Run/>
+                    <LineBreak/>
+                    <LineBreak/>
+                </Paragraph>
+            </FlowDocument>
 
-    </RichTextBox>
+        </RichTextBox>
+
+    </ScrollViewer>
 </Window>

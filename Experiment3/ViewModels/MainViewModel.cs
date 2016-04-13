@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Windows;
 using Experiment3.Helpers;
 using Nmea0183;
@@ -13,7 +14,7 @@ namespace Experiment3.ViewModels
     {
       AutopilotControl = new AutopilotControl(_magneticContext);
       Stats = new Stats(_magneticContext);
-      Stats.PropertyChanged += SetAutopilotHeadingToIncomingHeading;
+      Stats.PropertyChanged += CopyHeadingToAutopilot;
 
       // TODO: Ugh.
       WithMagneticContext.MagneticContext = _magneticContext;
@@ -22,9 +23,9 @@ namespace Experiment3.ViewModels
     public Stats Stats { get; }
     public AutopilotControl AutopilotControl { get; }
 
-    private void SetAutopilotHeadingToIncomingHeading(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+    private void CopyHeadingToAutopilot(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
     {
-      if (AutopilotControl.Enabled)
+      if (AutopilotControl.Enabled && !AutopilotControl.CopyCurrentHeading)
         return;
 
       if ("Heading" != propertyChangedEventArgs.PropertyName)
@@ -33,13 +34,9 @@ namespace Experiment3.ViewModels
       AutopilotControl.Heading = Stats.Heading.Value;
     }
 
-    public DelegateCommand<Window> WindowCloseCommand { get; } = new DelegateCommand<Window>(o => { o.Close(); });
+    public DelegateCommand WindowCloseCommand { get; } = new DelegateCommand(() => Application.Current.Shutdown());
+    public DelegateCommand HelpCommand { get; } = new DelegateCommand(() => new HelpWindow().ShowDialog());
 
-    public DelegateCommand<Window> HelpCommand { get; } = new DelegateCommand<Window>((w) =>
-    {
-      var h = new HelpWindow();
-      h.Show();
-    });
 
   }
 }
