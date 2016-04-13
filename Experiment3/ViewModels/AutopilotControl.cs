@@ -1,10 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Configuration;
-using System.Globalization;
-using System.Runtime;
 using System.Runtime.CompilerServices;
-using System.Windows.Controls;
 using Experiment3.Annotations;
 using Experiment3.Helpers;
 using Nmea0183;
@@ -16,7 +12,12 @@ namespace Experiment3.ViewModels
 {
   internal class AutopilotControl : INotifyPropertyChanged
   {
+    private readonly APB _apb;
     private readonly MagneticContext _magneticContext;
+    private readonly RepeatingSender _periodicalMessageSender;
+    private bool _copyCurrentHeading;
+    private bool _enabled;
+    private IMessageCompassValue _heading;
 
 
     public AutopilotControl(MagneticContext magneticContext)
@@ -30,24 +31,8 @@ namespace Experiment3.ViewModels
       MagneticCommand = new DelegateCommand(() => HeadingMagnetic = true);
       TrueCommand = new DelegateCommand(() => HeadingMagnetic = false);
       SetToHeadingCommand = new DelegateCommand(() => CopyCurrentHeading = !CopyCurrentHeading);
-      
-      _periodicalMessageSender = new RepeatingSender(TimeSpan.FromMilliseconds(500), OnBeforeAPBSend) { Message = _apb };
-    }
 
-    private void OnBeforeAPBSend(MessageBase message)
-    {
-      _apb.SteerTurn = _apb.SteerTurn == Turn.Left ? Turn.Right : Turn.Left;
-      UpdateApb();
-      Console.ForegroundColor = ConsoleColor.Yellow;
-      Console.WriteLine($"{DateTime.Now:u} {_apb}");
-      Console.ResetColor();
-    }
-
-    private void UpdateApb()
-    {
-      _apb.Heading = Heading;
-      _apb.Bearing = Heading;
-      _apb.BOD = Heading;
+      _periodicalMessageSender = new RepeatingSender(TimeSpan.FromMilliseconds(500), OnBeforeAPBSend) {Message = _apb};
     }
 
 
@@ -58,13 +43,6 @@ namespace Experiment3.ViewModels
     public DelegateCommand TrueCommand { get; }
     public DelegateCommand SetToHeadingCommand { get; }
 
-
-    private readonly APB _apb;
-    private IMessageCompassValue _heading;
-    private bool _enabled;
-    private readonly RepeatingSender _periodicalMessageSender;
-    private bool _copyCurrentHeading;
-
     public IMessageCompassValue Heading
     {
       get { return _heading; }
@@ -73,12 +51,6 @@ namespace Experiment3.ViewModels
         _heading = value;
         InvokePropertyChanged();
       }
-    }
-
-    private void InvokePropertyChanged()
-    {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HeadingValue"));
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HeadingMagnetic"));
     }
 
 
@@ -99,7 +71,7 @@ namespace Experiment3.ViewModels
       get { return _heading.IsMagnetic; }
       set
       {
-        if (value ==_heading.IsMagnetic)
+        if (value == _heading.IsMagnetic)
           return;
 
         _heading = value ? (IMessageCompassValue) _magneticContext.Magnetic(_heading) : _magneticContext.True(_heading);
@@ -127,9 +99,33 @@ namespace Experiment3.ViewModels
       get { return _copyCurrentHeading; }
       set
       {
-        _copyCurrentHeading = value; 
+        _copyCurrentHeading = value;
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CopyCurrentHeading"));
       }
+    }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    private void OnBeforeAPBSend(MessageBase message)
+    {
+      _apb.SteerTurn = _apb.SteerTurn == Turn.Left ? Turn.Right : Turn.Left;
+      UpdateApb();
+      Console.ForegroundColor = ConsoleColor.Yellow;
+      Console.WriteLine($"{DateTime.Now:u} {_apb}");
+      Console.ResetColor();
+    }
+
+    private void UpdateApb()
+    {
+      _apb.Heading = Heading;
+      _apb.Bearing = Heading;
+      _apb.BOD = Heading;
+    }
+
+    private void InvokePropertyChanged()
+    {
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HeadingValue"));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HeadingMagnetic"));
     }
 
     private void Left()
@@ -158,14 +154,10 @@ namespace Experiment3.ViewModels
       InvokePropertyChanged();
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-
     [NotifyPropertyChangedInvocator]
     protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
   }
-
-
 }

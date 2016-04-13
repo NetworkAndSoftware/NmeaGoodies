@@ -8,6 +8,7 @@ using System.Windows.Threading;
 using Experiment3.Annotations;
 using Experiment3.Models;
 using Geometry;
+using Newtonsoft.Json;
 using Nmea0183;
 using Nmea0183.Communications;
 using Nmea0183.Constants;
@@ -19,24 +20,36 @@ namespace Experiment3.ViewModels
   internal class Stats : INotifyPropertyChanged
   {
     private const double MINIMUM_SPEED_FOR_VALID_CALCULATIONS = 1;
+    private const string FILENAME_COMPASS_CORRECTION = @"compasscorrection.json";
 
+    private readonly CompassCorrectionPersister _compassCorrectionPersister;
 
     private readonly Dictionary<MessageName, Tuple<MessageBase, DateTime>> _lastMessageByType =
       new Dictionary<MessageName, Tuple<MessageBase, DateTime>>();
 
-    public readonly MagneticContext MagneticContext;
+    private readonly MagneticContext _magneticContext;
 
     private readonly Length _minimumDistanceForCalculations = Length.FromMeters(.001); // one millimeter
     private readonly TimeSpan _minimumElapsedtimeForCalculations = TimeSpan.FromMilliseconds(100);
 
-    private QuantityWithMetadata<Coordinate> _lastposition;
-    private double _meandeviation;
+    private readonly CompassCorrection _compassCorrection;
 
-    private ulong _samples;
+    private QuantityWithMetadata<Coordinate> _lastposition;
 
     public Stats(MagneticContext magneticContext)
     {
-      MagneticContext = magneticContext;
+      _magneticContext = magneticContext;
+      _compassCorrection = new CompassCorrection(_magneticContext);
+      _compassCorrectionPersister = new CompassCorrectionPersister(FILENAME_COMPASS_CORRECTION);
+      try
+      {
+        _compassCorrectionPersister.Read(_compassCorrection);
+      }
+      catch (JsonSerializationException)
+      {
+        // eat it
+      }
+       
 
       MessageDispatcher.IncomingMessage += OnIncomingMessage;
       var timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
@@ -45,16 +58,12 @@ namespace Experiment3.ViewModels
     }
 
     public QuantityWithMetadata<IMessageCompassValue> Heading { get; private set; }
-
     public QuantityWithMetadata<IMessageCompassValue> Cog { get; private set; }
-
     public QuantityWithMetadata<double> Sog { get; private set; }
-
-    public double MeanDeviation { get; private set; }
-
-    public ulong SampleCount { get; private set; }
-
     public QuantityWithMetadata<IMessageCompassValue> CorrectedHeading { get; private set; }
+    public double MeanDeviation => _compassCorrection.Mean;
+    public ulong SampleCount => _compassCorrection.Count;
+
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -129,16 +138,11 @@ namespace Experiment3.ViewModels
       if (Sog < MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
         return;
 
-      var deviation = MagneticContext.ExecuteFunction(Heading.Value, Cog.Value, (value1, value2) => value1 - value2);
+      _compassCorrection.AddSample(Heading.Value, Cog.Value);
+      _compassCorrectionPersister.Write(_compassCorrection);
 
-      _meandeviation = (deviation + _samples*_meandeviation)/(_samples + 1);
-
-      _samples++;
-
-      MeanDeviation = _meandeviation;
-      SampleCount = _samples;
-      CorrectedHeading = new QuantityWithMetadata<IMessageCompassValue>(MagneticContext.ExecuteFunction(Heading.Value, value => value - MeanDeviation));
-
+      CorrectedHeading = new QuantityWithMetadata<IMessageCompassValue>(_compassCorrection.CorrectHeading(Heading.Value));
+      
       if (PropertyChanged == null)
         return;
 
@@ -177,7 +181,7 @@ namespace Experiment3.ViewModels
         case MessageName.HDM:
         {
           var hdm = (HDM) message;
-          Heading = new QuantityWithMetadata<IMessageCompassValue>(MagneticContext.Magnetic(hdm.Heading));
+          Heading = new QuantityWithMetadata<IMessageCompassValue>(_magneticContext.Magnetic(hdm.Heading));
 
           PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Heading"));
         }

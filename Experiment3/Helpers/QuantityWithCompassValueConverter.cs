@@ -5,7 +5,7 @@ using Nmea0183;
 
 namespace Experiment3.Helpers
 {
-  internal abstract class QuantityWithCompassValueConverter<T> : WithMagneticContext, IValueConverter
+  internal abstract class QuantityWithCompassValueConverter<T> : BaseWithMagneticContext, IValueConverter
     where T : IMessageCompassValue
   {
     public object Convert(object value, Type targetType,

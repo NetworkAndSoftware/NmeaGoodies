@@ -17,7 +17,7 @@ namespace Experiment3.ViewModels
       Stats.PropertyChanged += CopyHeadingToAutopilot;
 
       // TODO: Ugh.
-      WithMagneticContext.MagneticContext = _magneticContext;
+      BaseWithMagneticContext.MagneticContext = _magneticContext;
     }
 
     public Stats Stats { get; }
