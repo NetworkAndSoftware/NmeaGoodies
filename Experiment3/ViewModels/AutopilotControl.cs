@@ -31,14 +31,16 @@ namespace Experiment3.ViewModels
       TrueCommand = new DelegateCommand(() => HeadingMagnetic = false);
       SetToHeadingCommand = new DelegateCommand(() => CopyCurrentHeading = !CopyCurrentHeading);
       
-      _periodicalMessageSender = new RepeatingSender(onBeforeSend: OnBeforeAPBSend) { Message = _apb };
+      _periodicalMessageSender = new RepeatingSender(TimeSpan.FromMilliseconds(500), OnBeforeAPBSend) { Message = _apb };
     }
 
     private void OnBeforeAPBSend(MessageBase message)
     {
       _apb.SteerTurn = _apb.SteerTurn == Turn.Left ? Turn.Right : Turn.Left;
       UpdateApb();
-      Console.WriteLine($"Sending {_apb}");
+      Console.ForegroundColor = ConsoleColor.Yellow;
+      Console.WriteLine($"{DateTime.Now:u} {_apb}");
+      Console.ResetColor();
     }
 
     private void UpdateApb()

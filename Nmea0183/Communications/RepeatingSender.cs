@@ -8,14 +8,18 @@ namespace Nmea0183.Communications
   {
     private readonly Action<MessageBase> _onBeforeSend;
     private readonly DispatcherTimer _timer = new DispatcherTimer();
-    
+
     public MessageBase Message { get; set; }
 
-    public RepeatingSender(int interval = 1, Action<MessageBase> onBeforeSend = null)
+    public RepeatingSender(Action<MessageBase> onBeforeSend = null) : this(TimeSpan.FromSeconds(1), onBeforeSend)
+    {
+    }
+
+    public RepeatingSender(TimeSpan interval, Action<MessageBase> onBeforeSend = null)
     {
       _onBeforeSend = onBeforeSend;
       _timer.Tick += TimerOnTick;
-      _timer.Interval = TimeSpan.FromSeconds(interval);
+      _timer.Interval = interval;
       
     }
 

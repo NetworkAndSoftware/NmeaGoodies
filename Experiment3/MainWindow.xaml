@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525" WindowStyle="None" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         AllowsTransparency="True" MouseDown="Window_MouseDown" 
-        Deactivated="Main_Deactivated" Loaded="Main_Loaded"  
+        Deactivated="Main_Deactivated" Loaded="Main_Loaded" FontSize="16"  
         >
 
     <Window.DataContext>

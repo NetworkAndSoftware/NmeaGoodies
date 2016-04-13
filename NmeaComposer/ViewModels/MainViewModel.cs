@@ -46,7 +46,7 @@ namespace NmeaComposer.ViewModels
     {
       Basic = new Basic(CreateMessageFromBasic);
       TalkerId = "SN";
-      _repeatingSender = new RepeatingSender();
+      _repeatingSender = new RepeatingSender(TimeSpan.FromSeconds(1));
     }
 
     public void CreateMessageFromBasic()
