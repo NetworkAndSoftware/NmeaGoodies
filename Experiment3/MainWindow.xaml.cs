@@ -33,12 +33,15 @@ namespace Experiment3
 
     private void Main_Deactivated(object sender, EventArgs e)
     {
+      Topmost = false;
+
       var t = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1)};
       t.Tick += (o, args) =>
       {
         if (SystemIdleHook.IdleTime <= TimeSpan.FromSeconds(2))
           return;
 
+        Topmost = true;
         Activate();
         t.Stop();
       };
