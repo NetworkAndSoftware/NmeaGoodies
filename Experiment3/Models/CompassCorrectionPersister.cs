@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Markup;
 using Newtonsoft.Json;
@@ -27,7 +28,6 @@ namespace Experiment3.Models
     private static int nested = 0;
     public void Write(CompassCorrection correction)
     {
-      nested ++;
       try
       {
         using (var stream = File.Open(_filename, FileMode.OpenOrCreate))
@@ -39,13 +39,7 @@ namespace Experiment3.Models
         }
       }
       catch (IOException x)
-      {
-        x.Data.Add("nested", nested);
-        throw;
-      }
-      finally
-      {
-        nested--;
+      { Trace.WriteLine("Ignoring exception while trying to write compass correction: " + x);
       }
     }
   }
