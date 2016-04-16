@@ -1,5 +1,3 @@
-using Experiment3.Annotations;
-using Newtonsoft.Json;
 using Nmea0183;
 
 namespace Experiment3.Models
@@ -7,10 +5,10 @@ namespace Experiment3.Models
   internal class CompassCorrection
   {
     private readonly MagneticContext _context;
-    public double Mean { get; set; }
+    public decimal Mean { get; set; }
     public ulong Count { get; set; }
 
-    public CompassCorrection(MagneticContext context, double mean = 0, ulong count = 0)
+    public CompassCorrection(MagneticContext context, decimal mean = 0, ulong count = 0)
     {
       _context = context;
       Count = count;
@@ -19,7 +17,7 @@ namespace Experiment3.Models
 
     public void AddSample(IMessageCompassValue heading, IMessageCompassValue cog)
     {
-      var deviation = _context.ExecuteFunction(heading, cog, (value1, value2) => value1 - value2);
+      var deviation = (decimal) _context.ExecuteFunction(heading, cog, (value1, value2) => value1 - value2);
 
       Mean = (deviation + Count * Mean) / (Count + 1);
 
@@ -28,7 +26,7 @@ namespace Experiment3.Models
 
     public IMessageCompassValue CorrectHeading(IMessageCompassValue value)
     {
-      return (_context.ExecuteFunction(value, v => v - Mean));
+      return (_context.ExecuteFunction(value, v => v - (double) Mean));
     }
   }
 }

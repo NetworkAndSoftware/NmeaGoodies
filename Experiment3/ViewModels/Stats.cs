@@ -61,7 +61,7 @@ namespace Experiment3.ViewModels
     public QuantityWithMetadata<IMessageCompassValue> Cog { get; private set; }
     public QuantityWithMetadata<double> Sog { get; private set; }
     public QuantityWithMetadata<IMessageCompassValue> CorrectedHeading { get; private set; }
-    public double MeanDeviation => _compassCorrection.Mean;
+    public decimal MeanDeviation => _compassCorrection.Mean;
     public ulong SampleCount => _compassCorrection.Count;
 
 
