@@ -109,5 +109,10 @@ namespace Nmea0183
     {
       return Create(double.Parse(svalue), MessageFormatting.ParseOneLetterEnumByValue<MagneticOrTrue>(smagneticortrue));
     }
+
+    public static IMessageCompassValue FromMessageParts(string svalue, bool ismagnetic)
+    {
+      return Create(double.Parse(svalue), ismagnetic ? MagneticOrTrue.Magnetic : MagneticOrTrue.True);
+    }
   }
 }

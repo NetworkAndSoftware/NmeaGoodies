@@ -4,14 +4,17 @@ namespace Nmea0183
 {
   /// <summary>
   ///   Allows conversions of Magnetic and True bearings
+  ///   Negative declination and deviation means to the east, postitive is west
   /// </summary>
   public class MagneticContext
   {
-    private readonly double _magneticdeclination;
+    public double Declination { get; }
+    public double? Deviation { get; }
 
-    public MagneticContext(double magneticdeclination)
+    public MagneticContext(double declination, double? deviation = null)
     {
-      _magneticdeclination = magneticdeclination;
+      Declination = declination;
+      Deviation = deviation;
     }
 
     public TrueMessageCompassValue True(IMessageCompassValue value)
@@ -19,7 +22,7 @@ namespace Nmea0183
       if (value is TrueMessageCompassValue)
         return (TrueMessageCompassValue) value;
       if (value is MagneticMessageCompassValue)
-        return new TrueMessageCompassValue(value.Value - _magneticdeclination);
+        return new TrueMessageCompassValue(value.Value - Declination - (Deviation ?? 0));
       return null;
     }
 
@@ -28,7 +31,7 @@ namespace Nmea0183
       if (value is MagneticMessageCompassValue)
         return (MagneticMessageCompassValue) value;
       if (value is TrueMessageCompassValue)
-        return new MagneticMessageCompassValue(value.Value + _magneticdeclination);
+        return new MagneticMessageCompassValue(value.Value + Declination + (Deviation ?? 0));
       return null;
     }
 

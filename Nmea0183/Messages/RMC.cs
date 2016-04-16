@@ -72,7 +72,18 @@ namespace Nmea0183.Messages
               }
         */
 
-     time = System.DateTime.ParseExact(parts[0], DATETIME_HHMMSSfff, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+      try
+      {
+        time = System.DateTime.ParseExact(parts[0], DATETIME_HHMMSSfff, DateTimeFormatInfo.InvariantInfo,
+          DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+      }
+      catch (FormatException)
+      {
+        time = System.DateTime.ParseExact(parts[0], DATETIME_HHMMSS, DateTimeFormatInfo.InvariantInfo,
+          DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+      }
+
+
 
       DateTime = DateTime?.Add(time.TimeOfDay) ?? time;
     }

@@ -1,4 +1,5 @@
 using System.IO;
+using System.Windows.Markup;
 using Newtonsoft.Json;
 
 namespace Experiment3.Models
@@ -23,23 +24,28 @@ namespace Experiment3.Models
       }
     }
 
+    private static int nested = 0;
     public void Write(CompassCorrection correction)
     {
+      nested ++;
       try
       {
         using (var stream = File.Open(_filename, FileMode.OpenOrCreate))
         using (var writer = new StreamWriter(stream))
-        using (JsonWriter jsonWriter = new JsonTextWriter(writer))
+        using (JsonWriter jsonWriter = new JsonTextWriter(writer) {Formatting = Formatting.Indented})
         {
-          jsonWriter.Formatting = Formatting.Indented;
-
           var serializer = new JsonSerializer();
           serializer.Serialize(jsonWriter, correction);
         }
       }
-      catch (IOException)
+      catch (IOException x)
       {
-        // just eat it for now
+        x.Data.Add("nested", nested);
+        throw;
+      }
+      finally
+      {
+        nested--;
       }
     }
   }

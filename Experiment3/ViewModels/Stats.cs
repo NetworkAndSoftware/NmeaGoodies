@@ -27,7 +27,7 @@ namespace Experiment3.ViewModels
     private readonly Dictionary<MessageName, Tuple<MessageBase, DateTime>> _lastMessageByType =
       new Dictionary<MessageName, Tuple<MessageBase, DateTime>>();
 
-    private readonly MagneticContext _magneticContext;
+    private MagneticContext _magneticContext;
 
     private readonly Length _minimumDistanceForCalculations = Length.FromMeters(.001); // one millimeter
     private readonly TimeSpan _minimumElapsedtimeForCalculations = TimeSpan.FromMilliseconds(100);
@@ -49,10 +49,10 @@ namespace Experiment3.ViewModels
       {
         // eat it
       }
-       
+
 
       MessageDispatcher.IncomingMessage += OnIncomingMessage;
-      var timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
+      var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
       timer.Tick += TimerTick;
       timer.Start();
     }
@@ -78,7 +78,7 @@ namespace Experiment3.ViewModels
         // Try to calculate Sog from position data
         if (null != _lastposition && !_lastposition.IsStale)
         {
-          var angulardistance = ((Coordinate) coordinate).Distance(_lastposition);
+          var angulardistance = ((Coordinate)coordinate).Distance(_lastposition);
           var distance = Ball.EarthSurfaceApproximation.Distance(angulardistance).NauticalMiles();
 
           if (distance >= _minimumDistanceForCalculations.NauticalMiles())
@@ -86,7 +86,7 @@ namespace Experiment3.ViewModels
             var elapsed = DateTime.UtcNow - _lastposition.Updated;
             if (elapsed.HasValue && elapsed.Value >= _minimumElapsedtimeForCalculations)
             {
-              Sog = distance/elapsed.Value.TotalHours;
+              Sog = distance / elapsed.Value.TotalHours;
               PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Sog"));
             }
           }
@@ -97,7 +97,7 @@ namespace Experiment3.ViewModels
         // Try to calculate Cog from position data
         if (null != _lastposition && !_lastposition.IsStale)
         {
-          var angulardistance = ((Coordinate) coordinate).Distance(_lastposition);
+          var angulardistance = ((Coordinate)coordinate).Distance(_lastposition);
           var distance = Ball.EarthSurfaceApproximation.Distance(angulardistance).NauticalMiles();
 
           if (distance >= _minimumDistanceForCalculations.NauticalMiles())
@@ -132,7 +132,7 @@ namespace Experiment3.ViewModels
 
     private void UpdateDeviation()
     {
-      if (AnyStale(new IQuantityWithMetaData[] {Sog, Cog, Heading}))
+      if (AnyStale(new IQuantityWithMetaData[] { Sog, Cog, Heading }))
         return;
 
       if (Sog < MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
@@ -142,7 +142,7 @@ namespace Experiment3.ViewModels
       _compassCorrectionPersister.Write(_compassCorrection);
 
       CorrectedHeading = new QuantityWithMetadata<IMessageCompassValue>(_compassCorrection.CorrectHeading(Heading.Value));
-      
+
       if (PropertyChanged == null)
         return;
 
@@ -157,11 +157,11 @@ namespace Experiment3.ViewModels
       var properties =
         GetType()
           .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-          .Where(info => info.PropertyType.GetInterfaces().Contains(typeof (IQuantityWithMetaData)));
+          .Where(info => info.PropertyType.GetInterfaces().Contains(typeof(IQuantityWithMetaData)));
 
       foreach (var info in properties)
       {
-        var property = (IQuantityWithMetaData) info.GetValue(this);
+        var property = (IQuantityWithMetaData)info.GetValue(this);
         if (null == property)
           continue;
 
@@ -179,19 +179,26 @@ namespace Experiment3.ViewModels
       switch (message.Name)
       {
         case MessageName.RMC:
-        {
-          var rmc = (RMC) message;
-          if (rmc.SOG > MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
           {
-            Cog = rmc.TMG;
-            Cog.Source = SourceType.External;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cog"));
-            Sog = rmc.SOG;
-            Sog.Source = SourceType.External;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Sog"));
-            OnUpdateCog();
+            var rmc = (RMC)message;
+            if (rmc.SOG > MINIMUM_SPEED_FOR_VALID_CALCULATIONS)
+            {
+              Cog = rmc.TMG;
+              Cog.Source = SourceType.External;
+              PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cog"));
+              Sog = rmc.SOG;
+              Sog.Source = SourceType.External;
+              PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Sog"));
+              OnUpdateCog();
+            }
           }
-        }
+          break;
+        case MessageName.HDG:
+          {
+            var hdg = (HDG)message;
+            if (null != hdg.MagneticContext)
+              _magneticContext = hdg.MagneticContext;
+          }
           break;
       }
       if (message is IHaveHeading)
@@ -202,7 +209,7 @@ namespace Experiment3.ViewModels
 
       if (message is IHasPosition)
       {
-        QuantityWithMetadata<Coordinate> c = (Coordinate) (message as IHasPosition).Position;
+        QuantityWithMetadata<Coordinate> c = (Coordinate)(message as IHasPosition).Position;
         c.Source = SourceType.External;
         c.Updated = messagetime;
         OnUpdatePosition(c);

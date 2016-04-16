@@ -104,6 +104,8 @@ namespace Nmea0183.Messages
             return new GLL(talkerId, bodyparts);
           case "GGA":
             return new GGA(talkerId, bodyparts);
+          case "HDG":
+            return new HDG(talkerId, bodyparts);
           default:
             return new UnknownMessage(talkerId, commandName, commandbody);
         }

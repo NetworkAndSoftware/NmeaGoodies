@@ -4,7 +4,7 @@ namespace Nmea0183.Constants
 {
   /// <summary>
   /// From http://freenmea.net/docs/nmea0183
-  /// and http://www.catb.org/gpsd/NMEA.html#_hdm_heading_magnetic
+  /// and http://www.catb.org/gpsd/NMEA.html
   /// </summary>
   public enum MessageName
   {
@@ -121,5 +121,10 @@ namespace Nmea0183.Constants
     /// (according to http://www.trimble.com/OEM_ReceiverHelp/V4.44/en/NMEA-0183messages_GBS.html )
     /// </summary>
     GBS,
+
+    /// <summary>
+    /// HDG - Heading - Deviation & Variation
+    /// </summary>
+    HDG,
   };
 }

@@ -69,6 +69,7 @@
     <Compile Include="Messages\GBS.cs" />
     <Compile Include="Messages\GGA.cs" />
     <Compile Include="Messages\GLL.cs" />
+    <Compile Include="Messages\HDG.cs" />
     <Compile Include="Messages\HDM.cs" />
     <Compile Include="CompassValue.cs" />
     <Compile Include="Messages\HDT.cs" />
