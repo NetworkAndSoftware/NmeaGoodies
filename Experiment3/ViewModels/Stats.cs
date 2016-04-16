@@ -20,7 +20,7 @@ namespace Experiment3.ViewModels
   internal class Stats : INotifyPropertyChanged
   {
     private const double MINIMUM_SPEED_FOR_VALID_CALCULATIONS = 1;
-    private const string FILENAME_COMPASS_CORRECTION = @"compasscorrection.json";
+    private static readonly string FilenameCompassCorrection = $"compasscorrection.{Environment.MachineName.ToLower()}.json";
 
     private readonly CompassCorrectionPersister _compassCorrectionPersister;
 
@@ -40,7 +40,7 @@ namespace Experiment3.ViewModels
     {
       _magneticContext = magneticContext;
       _compassCorrection = new CompassCorrection(_magneticContext);
-      _compassCorrectionPersister = new CompassCorrectionPersister(FILENAME_COMPASS_CORRECTION);
+      _compassCorrectionPersister = new CompassCorrectionPersister(FilenameCompassCorrection);
       try
       {
         _compassCorrectionPersister.Read(_compassCorrection);
