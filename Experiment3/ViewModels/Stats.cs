@@ -178,15 +178,6 @@ namespace Experiment3.ViewModels
       // ReSharper disable once SwitchStatementMissingSomeCases
       switch (message.Name)
       {
-        case MessageName.HDM:
-        {
-          var hdm = (HDM) message;
-          Heading = new QuantityWithMetadata<IMessageCompassValue>(_magneticContext.Magnetic(hdm.Heading));
-
-          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Heading"));
-        }
-          break;
-
         case MessageName.RMC:
         {
           var rmc = (RMC) message;
@@ -203,6 +194,12 @@ namespace Experiment3.ViewModels
         }
           break;
       }
+      if (message is IHaveHeading)
+      {
+        Heading = new QuantityWithMetadata<IMessageCompassValue>(_magneticContext.Magnetic((message as IHaveHeading).Heading));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Heading"));
+      }
+
       if (message is IHasPosition)
       {
         QuantityWithMetadata<Coordinate> c = (Coordinate) (message as IHasPosition).Position;

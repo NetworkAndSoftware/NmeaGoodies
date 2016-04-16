@@ -4,6 +4,7 @@ namespace Nmea0183.Constants
 {
   /// <summary>
   /// From http://freenmea.net/docs/nmea0183
+  /// and http://www.catb.org/gpsd/NMEA.html#_hdm_heading_magnetic
   /// </summary>
   public enum MessageName
   {
@@ -103,8 +104,17 @@ namespace Nmea0183.Constants
     ///<summary>Remote Control for a DGPS receiver</summary>
     PSLIB,
 
-    ///<summary>This is what the Sitex SP110 / AP47 puts out from its compass</summary>
+    /// <summary>
+    /// Heading, Magnetic. 
+    /// See http://www.catb.org/gpsd/NMEA.html#_hdm_heading_magnetic
+    /// </summary>
     HDM,
+
+    /// <summary>
+    /// Heading, True. 
+    /// See http://www.catb.org/gpsd/NMEA.html#_hdm_heading_magnetic
+    /// </summary>
+    HDT,
 
     /// <summary>
     /// GNSS satellite fault detection (RAIM support) 

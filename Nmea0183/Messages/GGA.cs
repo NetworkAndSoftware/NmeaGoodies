@@ -63,7 +63,14 @@ namespace Nmea0183.Messages
 
     internal GGA(string talkerId, string[] parts) : base(talkerId)
     {
-      Time = TimeSpan.ParseExact(parts[0], TIMESPAN_HHMMSSfff, DateTimeFormatInfo.InvariantInfo);
+      try
+      {
+        Time = TimeSpan.ParseExact(parts[0], TIMESPAN_HHMMSSfff, DateTimeFormatInfo.InvariantInfo);
+      }
+      catch (FormatException x)
+      {
+        Time = TimeSpan.ParseExact(parts[0], TIMESPAN_HHMMSS, DateTimeFormatInfo.InvariantInfo); 
+      }
       Position = new Position(parts[1], parts[2], parts[3], parts[4]);
       FixQuality = MessageFormatting.ParseOneLetterEnumByValue<FixQuality>(parts[5]);
       TrackedSatelliteCount = int.Parse(parts[6]);

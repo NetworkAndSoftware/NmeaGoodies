@@ -25,14 +25,21 @@ namespace Experiment3.Models
 
     public void Write(CompassCorrection correction)
     {
-      using (var stream = File.Open(_filename, FileMode.OpenOrCreate))
-      using (var writer = new StreamWriter(stream))
-      using (JsonWriter jsonWriter = new JsonTextWriter(writer))
+      try
       {
-        jsonWriter.Formatting = Formatting.Indented;
+        using (var stream = File.Open(_filename, FileMode.OpenOrCreate))
+        using (var writer = new StreamWriter(stream))
+        using (JsonWriter jsonWriter = new JsonTextWriter(writer))
+        {
+          jsonWriter.Formatting = Formatting.Indented;
 
-        var serializer = new JsonSerializer();
-        serializer.Serialize(jsonWriter, correction);
+          var serializer = new JsonSerializer();
+          serializer.Serialize(jsonWriter, correction);
+        }
+      }
+      catch (IOException)
+      {
+        // just eat it for now
       }
     }
   }

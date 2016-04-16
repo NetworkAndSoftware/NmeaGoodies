@@ -10,6 +10,7 @@ namespace Nmea0183.Messages
     protected const string DATETIME_HHMMSS = "HHmmss";
     protected const string DATETIME_HHMMSSfff = "HHmmss.FFF";
     protected const string TIMESPAN_HHMMSSfff = "hhmmss\\.FFF";
+    protected const string TIMESPAN_HHMMSS = "hhmmss";
 
     protected MessageBase(string talkerId)
     {
@@ -91,6 +92,8 @@ namespace Nmea0183.Messages
         {
           case "HDM":
             return new HDM(talkerId, bodyparts);
+          case "HDT":
+            return new HDT(talkerId, bodyparts);
           case "APB":
             return new APB(talkerId, bodyparts);
           case "RMC":

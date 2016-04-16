@@ -6,7 +6,7 @@ namespace Nmea0183.Messages
   ///<summary>This is what the Sitex SP110 / AP47 puts out from its compass</summary>
   [CommandName(MessageName.HDM)]
   // ReSharper disable once InconsistentNaming
-  public class HDM : MessageBase
+  public class HDM : MessageBase,IHaveHeading
   {
     public IMessageCompassValue Heading { get; set; }
 
