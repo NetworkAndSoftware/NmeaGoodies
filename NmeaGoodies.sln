@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{EBD27043-6B5
 	ProjectSection(SolutionItems) = preProject
 		doc\001notes.pdf = doc\001notes.pdf
 		doc\autopilot-sample.txt = doc\autopilot-sample.txt
+		doc\compasscorrection.nb = doc\compasscorrection.nb
+		doc\compasscorrection.pdf = doc\compasscorrection.pdf
 		running-notes.txt = running-notes.txt
 	EndProjectSection
 EndProject
