@@ -1,6 +1,7 @@
 Software to write
 
 - Serial exchanger with named read queue and write queue
+  - com port and baud rate are specified on.. command line
 - TCP exchanger with named read and write queue
 - Console logger
 - File logger

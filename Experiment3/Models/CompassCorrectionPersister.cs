@@ -25,7 +25,6 @@ namespace Experiment3.Models
       }
     }
 
-    private static int nested = 0;
     public void Write(CompassCorrection correction)
     {
       try

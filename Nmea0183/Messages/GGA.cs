@@ -67,7 +67,7 @@ namespace Nmea0183.Messages
       {
         Time = TimeSpan.ParseExact(parts[0], TIMESPAN_HHMMSSfff, DateTimeFormatInfo.InvariantInfo);
       }
-      catch (FormatException x)
+      catch (FormatException)
       {
         Time = TimeSpan.ParseExact(parts[0], TIMESPAN_HHMMSS, DateTimeFormatInfo.InvariantInfo); 
       }
