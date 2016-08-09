@@ -1,0 +1,17 @@
+Software to write
+
+- Serial exchanger with named read queue and write queue
+- TCP exchanger with named read and write queue
+- Console logger
+- File logger
+
+Read and write queues can be connected: input from one piece of software can so be connected
+
+Applications:
+- filter type applications read one queue and insert in another
+- gauges
+- autopilot filter 
+
+Messages in the queues contain the text NMEA forms
+optionally also the interpreted objects
+

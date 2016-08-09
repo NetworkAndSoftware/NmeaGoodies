@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nmea0183", "Nmea0183\Nmea0183.csproj", "{FB60EE22-3E95-4AB0-B1FE-06EF70EE4042}"
 EndProject
@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{EBD27043-6B5
 		doc\compasscorrection.nb = doc\compasscorrection.nb
 		doc\compasscorrection.pdf = doc\compasscorrection.pdf
 		running-notes.txt = running-notes.txt
+		specifications.txt = specifications.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowMessages", "ShowMessages\ShowMessages.csproj", "{605D894D-866E-4DF1-866E-9B6C8553ABFF}"
