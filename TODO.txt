@@ -1,0 +1,10 @@
+SerialExchange:
+
+- make it possible to abort program in the middle of ReadLine
+
+TcpExchange:
+
+- add listening for connections
+- add automatic connecting
+- add receiving messages from socket
+- add sending messages to socket
