@@ -19,8 +19,7 @@ namespace Experiment3.ViewModels
     private bool _enabled;
     private IMessageCompassValue _heading;
 
-
-    public AutopilotControl(MagneticContext magneticContext)
+    public AutopilotControl(MagneticContext magneticContext, MessageSender messageSender)
     {
       _magneticContext = magneticContext;
       _apb = new APB("SN");
@@ -32,9 +31,8 @@ namespace Experiment3.ViewModels
       TrueCommand = new DelegateCommand(() => HeadingMagnetic = false);
       SetToHeadingCommand = new DelegateCommand(() => CopyCurrentHeading = !CopyCurrentHeading);
 
-      _periodicalMessageSender = new RepeatingSender(TimeSpan.FromMilliseconds(500), OnBeforeAPBSend) {Message = _apb};
+      _periodicalMessageSender = new RepeatingSender(messageSender, TimeSpan.FromMilliseconds(500), OnBeforeAPBSend) {Message = _apb};
     }
-
 
     public DelegateCommand LeftCommand { get; }
     public DelegateCommand RightCommand { get; }

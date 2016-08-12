@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.Windows;
 using Experiment3.Helpers;
 using Nmea0183;
+using Nmea0183.Communications;
 
 namespace Experiment3.ViewModels
 {
@@ -10,10 +11,13 @@ namespace Experiment3.ViewModels
   {
     private readonly MagneticContext _magneticContext = new MagneticContext(16.45);
 
+    public readonly MessageReader MessageReader = new MessageReader("localhost", "serialin");
+    public readonly MessageSender MessageSender = new MessageSender("localhost", "serialout");
+
     public MainViewModel()
     {
-      AutopilotControl = new AutopilotControl(_magneticContext);
-      Stats = new Stats(_magneticContext);
+      AutopilotControl = new AutopilotControl(_magneticContext, MessageSender);
+      Stats = new Stats(_magneticContext, MessageReader);
       Stats.PropertyChanged += CopyHeadingToAutopilot;
 
       // TODO: Ugh.

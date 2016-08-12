@@ -91,7 +91,7 @@ namespace Nmea0183.Messages
     Status = MessageFormatting.ParseOneLetterEnumByValue<Flag>(parts[1]);
     Position = new Position(parts[2], parts[3], parts[4], parts[5]);
     SOG = float.Parse(parts[6]);
-    TMG = new TrueMessageCompassValue(double.Parse(parts[7]));
+    TMG = !string.IsNullOrWhiteSpace(parts[7]) ? new TrueMessageCompassValue(double.Parse(parts[7])) : null;
 
       if (!string.IsNullOrWhiteSpace(parts[9]))
       MagneticVariation = float.Parse(parts[9]);

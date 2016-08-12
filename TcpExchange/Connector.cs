@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nmea0183.Communications
+namespace TcpExchange
 {
   internal class Connector
   {

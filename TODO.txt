@@ -8,3 +8,12 @@ TcpExchange:
 - add automatic connecting
 - add receiving messages from socket
 - add sending messages to socket
+
+Programs:
+ - A depth gauge
+ - Gauges
+ - Log window that lists last of each type of message
+ - Exchanger service, with total configuration
+
+
+

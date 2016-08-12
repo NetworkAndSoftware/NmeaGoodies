@@ -16,16 +16,14 @@ namespace Experiment3
   /// </summary>
   public partial class MainWindow : Window
   {
-    const int POLLINGINTERVAL = 250;
-
     public MainWindow()
     {
       InitializeComponent();
-      MessageDispatcher.IncomingMessage += (message, datetime) =>
+      ViewModel.MessageReader.Message += (message, datetime) =>
       { if (MessageName.Unknown != message.Name)
-          Console.WriteLine($"{datetime:u} {message}");
+          Console.WriteLine($"{datetime.ToLocalTime():G} {message}");
       };
-      WpfMessagePoller.SetInterval(POLLINGINTERVAL);
+
       if (!Debugger.IsAttached) // because it makes the debugger really slow if hook code is being executed after the program is paused
         SystemIdleHook.Enabled = true;
     }

@@ -74,10 +74,10 @@ namespace Nmea0183.Messages
         throw new FormatException("Line is null or whitespace");
 
       if (line[0] != '$')
-        throw new FormatException("Does not look like NMEA0183 message");
+        throw new FormatException($"Does not look like NMEA0183 message. Perhaps AIS? \"{line}\"");
 
       if (!IsChecksumValid(line))
-        throw new FormatException($"Checksum error: in line {line}");
+        throw new FormatException($"Checksum error: in line \"{line}\"");
 
       var parts = line.Substring(0, line.Length - 3).Split(',');
 

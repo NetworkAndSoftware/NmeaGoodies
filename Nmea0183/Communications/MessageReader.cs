@@ -1,72 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Odbc;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Nmea0183.Helpers;
 using Nmea0183.Messages;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 namespace Nmea0183.Communications
 {
   /// <summary>
   ///   Reads and dispatches messages.
-  ///   Offers pub/sub
-  ///   TODO: This should use an ioc pattern
   /// </summary>
-  public class MessageReader
+  public class MessageReader : IDisposable
   {
-    private const int QUEUE_MAX_LENGTH = 256;
+    private IConnection _connection;
+    private IModel _model;
+    private EventingBasicConsumer _consumer;
 
-    private static MessageReader _instance;
+    public delegate void MessageEventHandler(MessageBase message, DateTime datetime);
 
-    public readonly Queue<Tuple<MessageBase, DateTime>> Messages = new Queue<Tuple<MessageBase, DateTime>>(QUEUE_MAX_LENGTH);
+    public event MessageEventHandler Message;
 
-    private MessageReader()
+    private void OnMessage(MessageBase message, DateTime datetime)
     {
-      Task.Factory.StartNew(KeepReading);
+      Message?.Invoke(message, datetime);
     }
 
-    public static MessageReader Instance => _instance ?? (_instance = new MessageReader());
-
-    private void KeepReading()
+    public MessageReader(string hostname, string exchange)
     {
-      while (true)
+      var factory = new ConnectionFactory() {HostName = hostname};
+      _connection = factory.CreateConnection();
+      _model = _connection.CreateModel();
+
+      _model.ExchangeDeclare(exchange, "fanout");
+
+      var queueName = _model.QueueDeclare().QueueName;
+      _model.QueueBind(queue: queueName, exchange: exchange, routingKey: string.Empty);
+
+      _consumer = new EventingBasicConsumer(_model);
+
+      _consumer.Received += (m, ea) =>
       {
+        var line = Encoding.UTF8.GetString(ea.Body);
         try
         {
-          using (var reader = new StreamReader(Connector.Instance.Stream, Encoding.UTF8))
-          {
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-              try
-              {
-                var message = MessageBase.Parse(line);
-
-                lock (Messages)
-                {
-                  // if Queue is full simply throw away old messages
-                  while (Messages.Count >= QUEUE_MAX_LENGTH)
-                    Messages.Dequeue();
-
-                  Messages.Enqueue(new Tuple<MessageBase, DateTime>(message, DateTime.UtcNow));
-                }
-              }
-              catch (FormatException x)
-              { 
-                Trace.WriteLine("Discarding message that can't be parsed. Exception was:");
-                Trace.WriteLine(x);
-              }
-            }
-          }
+          var message = MessageBase.Parse(line);
+          OnMessage(message, ea.BasicProperties.Timestamp.DateTime());
         }
-        catch (Exception x)
+        catch (FormatException x)
         {
-          var message = "Exception in read loop:" + x + "\n\nResuming...";
-          Trace.WriteLine(message);
-          Console.WriteLine(message);
+          Trace.WriteLine("Discarding message that can't be parsed. Exception was:");
+          Trace.WriteLine(x);
         }
-      }
+      };
+
+      _model.BasicConsume(queue: queueName, noAck: true, consumer: _consumer);
+    }
+
+    public void Dispose()
+    {
+      _model.Dispose();
+      _connection.Dispose();
     }
   }
 }

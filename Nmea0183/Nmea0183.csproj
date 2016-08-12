@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="RabbitMQ.Client, Version=3.6.5.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
+      <HintPath>..\packages\RabbitMQ.Client.3.6.5\lib\net45\RabbitMQ.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -59,12 +63,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communications\MessageSender.cs" />
     <Compile Include="MagneticContext.cs" />
     <Compile Include="MessageFormatting.cs" />
     <Compile Include="Messages\APB.cs" />
     <Compile Include="CommandNameAttribute.cs" />
     <Compile Include="Constants\MessageName.cs" />
-    <Compile Include="Communications\Connector.cs" />
     <Compile Include="Messages\Enum\Enum.cs" />
     <Compile Include="Messages\GBS.cs" />
     <Compile Include="Messages\GGA.cs" />
@@ -79,16 +83,14 @@
     <Compile Include="Messages\Interfaces\IHasPosition.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Messages\MessageBase.cs" />
-    <Compile Include="Communications\MessageDispatcher.cs" />
     <Compile Include="Messages\RMC.cs" />
     <Compile Include="Constants\TalkerId.cs" />
     <Compile Include="Tests.cs" />
-    <Compile Include="Communications\WpfMessagePoller.cs" />
     <Compile Include="Communications\MessageReader.cs" />
     <Compile Include="Communications\RepeatingSender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Communications\SocketWithStream.cs" />
     <Compile Include="Messages\UnknownMessage.cs" />
+    <Compile Include="Helpers\UnixTime.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

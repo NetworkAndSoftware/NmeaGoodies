@@ -46,7 +46,8 @@ namespace NmeaComposer.ViewModels
     {
       Basic = new Basic(CreateMessageFromBasic);
       TalkerId = "SN";
-      _repeatingSender = new RepeatingSender(TimeSpan.FromSeconds(1));
+      var messagesender = new MessageSender("localhost", "serialout");
+      _repeatingSender = new RepeatingSender(messagesender, TimeSpan.FromSeconds(1));
     }
 
     public void CreateMessageFromBasic()

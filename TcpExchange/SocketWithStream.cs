@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace Nmea0183.Communications
+namespace TcpExchange
 {
   internal class SocketWithStream
   {

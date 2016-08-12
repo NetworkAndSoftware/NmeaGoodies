@@ -28,6 +28,7 @@ namespace Experiment3.ViewModels
       new Dictionary<MessageName, Tuple<MessageBase, DateTime>>();
 
     private MagneticContext _magneticContext;
+    private readonly MessageReader _reader;
 
     private readonly Length _minimumDistanceForCalculations = Length.FromMeters(.001); // one millimeter
     private readonly TimeSpan _minimumElapsedtimeForCalculations = TimeSpan.FromMilliseconds(100);
@@ -36,9 +37,10 @@ namespace Experiment3.ViewModels
 
     private QuantityWithMetadata<Coordinate> _lastposition;
 
-    public Stats(MagneticContext magneticContext)
+    public Stats(MagneticContext magneticContext, MessageReader reader)
     {
       _magneticContext = magneticContext;
+      _reader = reader;
       _compassCorrection = new CompassCorrection(_magneticContext);
       _compassCorrectionPersister = new CompassCorrectionPersister(FilenameCompassCorrection);
       try
@@ -51,7 +53,7 @@ namespace Experiment3.ViewModels
       }
 
 
-      MessageDispatcher.IncomingMessage += OnIncomingMessage;
+      _reader.Message += OnIncomingMessage;
       var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
       timer.Tick += TimerTick;
       timer.Start();

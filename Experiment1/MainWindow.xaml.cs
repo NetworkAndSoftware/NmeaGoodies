@@ -33,7 +33,7 @@ namespace Experiment1
         };
         InitializeComponent();
 
-        _repeatingSender = new RepeatingSender(TimeSpan.FromSeconds(1)) { Message = Apb };
+        _repeatingSender = new RepeatingSender(new MessageSender("localhost", "serialout"), TimeSpan.FromSeconds(1)) { Message = Apb };
         _repeatingSender.Start();
       }
       catch (Exception x)

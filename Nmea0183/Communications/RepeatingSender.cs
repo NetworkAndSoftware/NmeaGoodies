@@ -6,17 +6,19 @@ namespace Nmea0183.Communications
 {
   public class RepeatingSender 
   {
+    private readonly MessageSender _sender;
     private readonly Action<MessageBase> _onBeforeSend;
     private readonly DispatcherTimer _timer = new DispatcherTimer();
 
     public MessageBase Message { get; set; }
 
-    public RepeatingSender(Action<MessageBase> onBeforeSend = null) : this(TimeSpan.FromSeconds(1), onBeforeSend)
+    public RepeatingSender(MessageSender sender, Action<MessageBase> onBeforeSend = null) : this(sender, TimeSpan.FromSeconds(1), onBeforeSend)
     {
     }
 
-    public RepeatingSender(TimeSpan interval, Action<MessageBase> onBeforeSend = null)
+    public RepeatingSender(MessageSender sender, TimeSpan interval, Action<MessageBase> onBeforeSend = null)
     {
+      _sender = sender;
       _onBeforeSend = onBeforeSend;
       _timer.Tick += TimerOnTick;
       _timer.Interval = interval;
@@ -40,13 +42,7 @@ namespace Nmea0183.Communications
 
       _onBeforeSend?.Invoke(Message);
 
-      Send(Message);
+      _sender.Send(Message);
     }
-
-    private void Send(MessageBase apb)
-    {
-      Connector.Instance.SendLine(apb.ToString());
-    }
-
   }
 }
