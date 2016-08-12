@@ -69,6 +69,7 @@
     <Compile Include="Messages\APB.cs" />
     <Compile Include="CommandNameAttribute.cs" />
     <Compile Include="Constants\MessageName.cs" />
+    <Compile Include="Messages\DPT.cs" />
     <Compile Include="Messages\Enum\Enum.cs" />
     <Compile Include="Messages\GBS.cs" />
     <Compile Include="Messages\GGA.cs" />
@@ -77,10 +78,12 @@
     <Compile Include="Messages\HDM.cs" />
     <Compile Include="CompassValue.cs" />
     <Compile Include="Messages\HDT.cs" />
+    <Compile Include="Messages\Interfaces\IHaveDepth.cs" />
     <Compile Include="Messages\Interfaces\IHasStatus.cs" />
     <Compile Include="Messages\Interfaces\IHasDateAndTime.cs" />
     <Compile Include="Messages\Interfaces\IMightHaveTime.cs" />
     <Compile Include="Messages\Interfaces\IHasPosition.cs" />
+    <Compile Include="Messages\PSMDOV.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Messages\MessageBase.cs" />
     <Compile Include="Messages\RMC.cs" />

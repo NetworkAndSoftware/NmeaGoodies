@@ -126,5 +126,15 @@ namespace Nmea0183.Constants
     /// HDG - Heading - Deviation & Variation
     /// </summary>
     HDG,
+
+    /// <summary>
+    /// ShipModul overflow. See http://www.shipmodul.com/downloads/manuals/miniplex-42.pdf
+    /// </summary>
+    PSMDOV,
+
+    /// <summary>
+    /// Depth of water. See http://catb.org/gpsd/NMEA.html
+    /// </summary>
+    DPT,
   };
 }

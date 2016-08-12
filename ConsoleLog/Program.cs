@@ -36,14 +36,14 @@ namespace ConsoleLog
 
       var exchange = args[0];
 
-      var factory = new ConnectionFactory() {HostName = "localhost"};
+      var factory = new ConnectionFactory() { HostName = "localhost" };
       using (var connection = factory.CreateConnection())
       using (var model = connection.CreateModel())
       {
         model.ExchangeDeclare(exchange, "fanout");
         var queueName = model.QueueDeclare().QueueName;
         model.QueueBind(queue: queueName, exchange: exchange, routingKey: string.Empty);
-        
+
         var consumer = new EventingBasicConsumer(model);
         consumer.Received += (m, ea) =>
         {
@@ -52,13 +52,19 @@ namespace ConsoleLog
           try
           {
             var message = MessageBase.Parse(line);
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            if (message is UnknownMessage)
+              Console.ForegroundColor = ConsoleColor.Magenta;
+            else
+              Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(message.ToString());
           }
-          catch (FormatException x)
-          {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(line);
+          catch (FormatException)
+          { // just skip non-NMEA messages, such as AIS
+            if (string.IsNullOrWhiteSpace(line) || line[0] == '$')
+            {
+              Console.ForegroundColor = ConsoleColor.Red;
+              Console.WriteLine(line);
+            }
           }
         };
 

@@ -40,7 +40,7 @@ namespace SerialExchange
       var nameReceiveExchange = args[1];
       var nameSendExchange = args[2];
 
-      using (var port = new SerialPort(namecomport))
+      using (var port = new SerialPort(namecomport, 115200))
       {
         try
         {

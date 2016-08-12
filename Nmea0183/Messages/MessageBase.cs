@@ -36,8 +36,8 @@ namespace Nmea0183.Messages
 
     private string GetCommandNameAttribute()
     {
-      var attributes = GetType().GetCustomAttributes(typeof (CommandNameAttribute), true);
-      return ((CommandNameAttribute) attributes.First()).Name.ToString();
+      var attributes = GetType().GetCustomAttributes(typeof(CommandNameAttribute), true);
+      return ((CommandNameAttribute)attributes.First()).Name.ToString();
     }
 
     public string TalkerId { get; set; }
@@ -46,13 +46,19 @@ namespace Nmea0183.Messages
 
     private static string Checksum(string s)
     {
-      var sum = s.ToCharArray().Aggregate<char, byte>(0, (current, c) => (byte) (current ^ Convert.ToByte(c)));
-      return BitConverter.ToString(new[] {sum});
+      var sum = s.ToCharArray().Aggregate<char, byte>(0, (current, c) => (byte)(current ^ Convert.ToByte(c)));
+      return BitConverter.ToString(new[] { sum });
     }
 
     public override string ToString()
     {
-      var line = TalkerId + CommandName + "," + CommandBody;
+      string line;
+
+      if (TalkerId[0] == 'P') // for proprietary messages, the CommandName should include the TalkedId
+        line = CommandName + "," + CommandBody;
+      else
+        line = TalkerId + CommandName + "," + CommandBody;
+
       return "$" + line + '*' + Checksum(line);
     }
 
@@ -76,15 +82,32 @@ namespace Nmea0183.Messages
       if (line[0] != '$')
         throw new FormatException($"Does not look like NMEA0183 message. Perhaps AIS? \"{line}\"");
 
-      if (!IsChecksumValid(line))
-        throw new FormatException($"Checksum error: in line \"{line}\"");
 
-      var parts = line.Substring(0, line.Length - 3).Split(',');
+
+      string[] parts;
+
 
       try
       {
-        var talkerId = parts[0].Substring(1, 2);
-        var commandName = parts[0].Substring(3);
+        string talkerId;
+        string commandName;
+
+        if (line.StartsWith("$P")) // proprietary messages, may not have checksum
+        {
+          parts = line.Split(',');
+          talkerId = parts[0].Substring(1, 4); // include the 'P' to prevent ambiguity
+          commandName = parts[0].Substring(1); // include the 'P' and the three letter manufacturer id to prevent ambiguity
+        }
+        else
+        {
+          if (!IsChecksumValid(line))
+            throw new FormatException($"Checksum error: in line \"{line}\"");
+
+          parts = line.Substring(0, line.Length - 3).Split(',');
+
+          talkerId = parts[0].Substring(1, 2);
+          commandName = parts[0].Substring(3);
+        }
         var commandbody = string.Join(",", parts.Skip(1).Take(parts.Length - 1));
         var bodyparts = commandbody.Split(',');
 
@@ -106,6 +129,10 @@ namespace Nmea0183.Messages
             return new GGA(talkerId, bodyparts);
           case "HDG":
             return new HDG(talkerId, bodyparts);
+          case "DPT":
+            return new DPT(talkerId, bodyparts);
+          case "PSMDOV":
+            return new PSMDOV(talkerId, bodyparts);
           default:
             return new UnknownMessage(talkerId, commandName, commandbody);
         }
