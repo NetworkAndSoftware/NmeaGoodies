@@ -1,10 +1,7 @@
-﻿// This is like a Hello World for reading NMEA messages. 
-
-
-using System;
+﻿using System;
 using Nmea0183.Communications;
 
-namespace ShowMessages
+namespace HelloWorld
 {
   internal class Program
   {
