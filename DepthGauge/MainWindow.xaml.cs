@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Experiment3.Helpers;
 using Nmea0183.Communications;
@@ -20,6 +21,10 @@ namespace DepthGauge
     private readonly DepthConversions _depthConversions;
     private double _depth;
     private readonly MessageReader _reader;
+    private DateTime _lastdatatime;
+
+    private readonly Brush StaleBrush = Brushes.DimGray;
+    private readonly Brush FreshBrush = Brushes.White;
 
     public MainWindow()
     {
@@ -28,6 +33,12 @@ namespace DepthGauge
 
       _depthConversions = new DepthConversions();
       ShowUnit();
+      ShowDepth();
+      ShowStale();
+
+      var timer = new DispatcherTimer(DispatcherPriority.ApplicationIdle) { Interval = TimeSpan.FromSeconds(1) };
+      timer.Tick += (sender, args) => { ShowStale(); };
+      timer.Start();
 
       _reader.Message += (message, datetime) =>
       {
@@ -36,7 +47,14 @@ namespace DepthGauge
         if (havedepth != null)
         {
           _depth = havedepth.Depth + havedepth.Offset;
-          Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(ShowDepth));
+          _lastdatatime = DateTime.Now;
+          Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+          {
+            timer.Stop();
+            timer.Start();
+            ShowStale();
+            ShowDepth();
+          }));
         }
       };
     }
@@ -87,6 +105,14 @@ namespace DepthGauge
     private void ShowDepth()
     {
       Depth.Text = _depthConversions.ConvertFromMeters(_depth).ToString("F1");
+    }
+
+    private void ShowStale()
+    {
+      bool isstale = (null == _lastdatatime) || (DateTime.Now - _lastdatatime > TimeSpan.FromSeconds(3));
+      var brush = isstale ? StaleBrush : FreshBrush;
+      Depth.Foreground = brush;
+      Unit.Foreground = brush;
     }
 
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -14,7 +14,6 @@ Depth Gauge
    - font size
    - pick exchange
  - more robust keep on top
- - display changes color if data stale.
 
 Programs:
  - More Gauges
