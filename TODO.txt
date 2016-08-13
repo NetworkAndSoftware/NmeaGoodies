@@ -16,9 +16,7 @@ Depth Gauge
    - font size
    - pick exchange
  - more robust keep on top
- - hotkeys:
-   H help
-   Q quit
+ - display changes color if data stale.
 
 Programs:
  - More Gauges
