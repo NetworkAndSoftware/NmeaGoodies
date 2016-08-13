@@ -7,6 +7,7 @@ using Nmea0183;
 using Nmea0183.Communications;
 using Nmea0183.Messages;
 using Nmea0183.Messages.Enum;
+using WpfGoodies;
 
 namespace Experiment3.ViewModels
 {

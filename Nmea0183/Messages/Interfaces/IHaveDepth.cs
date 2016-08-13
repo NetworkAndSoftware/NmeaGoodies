@@ -1,6 +1,7 @@
 ﻿namespace Nmea0183.Messages.Interfaces
 {
-  internal interface IHaveDepth 
+  public interface IHaveDepth 
   { double Depth { get; }
+    double Offset { get; }
   }
 }

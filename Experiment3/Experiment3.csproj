@@ -65,10 +65,7 @@
     <Compile Include="Helpers\NotConverter.cs" />
     <Compile Include="Helpers\NumberFormatConverter.cs" />
     <Compile Include="Helpers\QuantityWithCompassValueConverter.cs" />
-    <Compile Include="Helpers\SystemIdleHook.cs" />
-    <Compile Include="Helpers\DelegateCommand.cs" />
     <Compile Include="Helpers\BaseWithMagneticContext.cs" />
-    <Compile Include="Helpers\WindowCommand.cs" />
     <Compile Include="HelpWindow.xaml.cs">
       <DependentUpon>HelpWindow.xaml</DependentUpon>
     </Compile>
@@ -135,6 +132,10 @@
     <ProjectReference Include="..\Nmea0183\Nmea0183.csproj">
       <Project>{FB60EE22-3E95-4AB0-B1FE-06EF70EE4042}</Project>
       <Name>Nmea0183</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WpfGoodies\WpfGoodies.csproj">
+      <Project>{A7EF55E5-5551-4396-98C1-219EA3F8E22A}</Project>
+      <Name>WpfGoodies</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

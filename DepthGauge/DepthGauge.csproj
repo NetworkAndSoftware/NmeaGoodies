@@ -59,6 +59,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="HelpWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -66,6 +70,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DepthConversions.cs" />
+    <Compile Include="HelpWindow.xaml.cs">
+      <DependentUpon>HelpWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -104,6 +112,10 @@
     <ProjectReference Include="..\Nmea0183\Nmea0183.csproj">
       <Project>{fb60ee22-3e95-4ab0-b1fe-06ef70ee4042}</Project>
       <Name>Nmea0183</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WpfGoodies\WpfGoodies.csproj">
+      <Project>{A7EF55E5-5551-4396-98C1-219EA3F8E22A}</Project>
+      <Name>WpfGoodies</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

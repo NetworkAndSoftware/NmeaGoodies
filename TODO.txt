@@ -1,6 +1,8 @@
 SerialExchange:
 
 - make it possible to abort program in the middle of ReadLine
+- use async read
+- more robust
 
 TcpExchange:
 
@@ -9,9 +11,17 @@ TcpExchange:
 - add receiving messages from socket
 - add sending messages to socket
 
+Depth Gauge
+ - add configuration:
+   - font size
+   - pick exchange
+ - more robust keep on top
+ - hotkeys:
+   H help
+   Q quit
+
 Programs:
- - A depth gauge
- - Gauges
+ - More Gauges
  - Log window that lists last of each type of message
  - Exchanger service, with total configuration
 

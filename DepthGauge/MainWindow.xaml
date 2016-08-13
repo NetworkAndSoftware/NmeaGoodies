@@ -5,17 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DepthGauge"
         mc:Ignorable="d"
-        Title="Depth" Height="350" Width="525" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStyle="None">
+        Title="Depth" Height="350" Width="525" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStyle="None" MouseDown="Window_MouseDown"
+        Deactivated="Main_Deactivated" Loaded="Main_Loaded" Closing="Window_Closing" 
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        >
+    <Window.InputBindings>
+        <KeyBinding Key="X" Command="{Binding Path=WindowCloseCommand}"/>
+        <KeyBinding Key="Q" Command="{Binding Path=WindowCloseCommand}"/>
+        <KeyBinding Key="H" Command="{Binding Path=HelpCommand}"/>
+        <KeyBinding Key="OemQuestion" Modifiers="Shift" Command="{Binding Path=HelpCommand}"/>
+    </Window.InputBindings>
     <Grid Background="Black">
         <Label HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White">
-                <TextBlock FontSize="48" >
+            <TextBlock FontSize="48" >
                 <Run FontSize="24">Depth</Run>
                     <LineBreak></LineBreak>
                     <Run Name="Depth">0</Run>
-                    <Run >m</Run>
+                    <Run Name="Unit" MouseUp="Run_MouseUp" >m</Run>
+                <LineBreak></LineBreak>
+                <Run FontSize="10">Press ? for help</Run>
             </TextBlock>
         </Label>
-        
+
 
     </Grid>
 </Window>

@@ -4,6 +4,7 @@ using System.Windows;
 using Experiment3.Helpers;
 using Nmea0183;
 using Nmea0183.Communications;
+using WpfGoodies;
 
 namespace Experiment3.ViewModels
 {

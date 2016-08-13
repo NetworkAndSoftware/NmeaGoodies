@@ -28,11 +28,7 @@ namespace Experiment3
         SystemIdleHook.Enabled = true;
     }
 
-    private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-    {
-      if (e.ChangedButton == MouseButton.Left)
-        DragMove();
-    }
+
 
     private MainViewModel ViewModel => (MainViewModel)this.DataContext;
 
@@ -49,7 +45,7 @@ namespace Experiment3
         if (SystemIdleHook.IdleTime <= TimeSpan.FromSeconds(2))
           return;
 
-        Topmost = true;
+        Topmost = false;
         Activate();
         t.Stop();
       };
@@ -59,6 +55,12 @@ namespace Experiment3
     private void Main_Loaded(object sender, RoutedEventArgs e)
     {
       Activate();
+    }
+
+    private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+      if (e.ChangedButton == MouseButton.Left)
+        DragMove();
     }
   }
 }
