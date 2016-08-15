@@ -94,7 +94,7 @@ namespace SerialExchange
               #region Write to serial port
 
               var queueName = model.QueueDeclare().QueueName;
-              model.QueueBind(queueName, nameReceiveExchange, string.Empty);
+              model.QueueBind(queueName, nameSendExchange, string.Empty);
 
               var consumer = new EventingBasicConsumer(model);
               consumer.Received += (m, ea) =>
