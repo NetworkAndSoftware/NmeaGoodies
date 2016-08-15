@@ -49,38 +49,68 @@ namespace TcpExchange
         model.ExchangeDeclare(configuration.ReceiveExchange, "fanout");
         model.ExchangeDeclare(configuration.SendExchange, "fanout");
 
+        var stopevent = new ManualResetEventSlim();
+        Task task = null;
+
         if (configuration.Listen)
         {
-          var listeningsocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-          listeningsocket.Bind(configuration.EndPoint);
-          listeningsocket.Listen(2);
-          while (true)
-          {
-            var connectedsocket = listeningsocket.Accept();
-            HandleConnection(connectedsocket, model, configuration.ReceiveExchange, configuration.SendExchange, new ManualResetEventSlim());
-          }
+          task = Task.Factory.StartNew(() =>
+            {
+              var listeningsocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+              listeningsocket.Bind(configuration.EndPoint);
+              listeningsocket.Listen(2);
+
+              while (true)
+              {
+                var connectedsocket = listeningsocket.Accept();
+
+                HandleConnection(connectedsocket, model, configuration.ReceiveExchange, configuration.SendExchange,
+                  stopevent);
+              }
+            });
+
+          Console.WriteLine($@"{commandName} active.
+Listening, TCP -> exchange '{configuration.ReceiveExchange}'.
+Exchange '{configuration.SendExchange}' -> TCP'
+Press Q to exit.");
         }
         else
         if (configuration.Connect)
         {
-          var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-          while (true)
+          task = Task.Factory.StartNew(() =>
           {
-            socket.Connect(configuration.EndPoint);
-            HandleConnection(socket, model, configuration.ReceiveExchange, configuration.SendExchange, new ManualResetEventSlim());
-          }
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            while (true)
+            {
+              socket.Connect(configuration.EndPoint);
+              HandleConnection(socket, model, configuration.ReceiveExchange, configuration.SendExchange, stopevent);
+            }
+          });
+
+          Console.WriteLine($@"{commandName} active.
+Making connections, TCP -> exchange '{configuration.ReceiveExchange}'.
+Exchange '{configuration.SendExchange}' -> TCP
+Press Q to exit.");
         }
+        while (Console.ReadKey().KeyChar.ToString().ToLower() != "q")
+          ;
+        stopevent.Set();
+        //task?.Wait();
       }
+
       return 0;
     }
 
-    private static void HandleConnection(Socket socket, IModel model, string receiveexchange, string sendexchange, ManualResetEventSlim stopevent)
+    private static void HandleConnection(Socket socket, IModel model, string receiveexchange, string sendexchange,
+      ManualResetEventSlim stopevent)
     {
       var stream = new NetworkStream(socket);
       var writer = new StreamWriter(stream);
       var reader = new StreamReader(stream);
 
       #region Write to socket
+
       var queueName = model.QueueDeclare().QueueName;
       model.QueueBind(queueName, sendexchange, string.Empty);
 
@@ -101,12 +131,12 @@ namespace TcpExchange
           else
             throw;
         }
-
       };
 
       model.BasicConsume(queueName, true, consumer);
 
       #endregion
+
       #region Read from socket
 
       var continousreader = new ContinuousLineReader(stream);
@@ -118,12 +148,10 @@ namespace TcpExchange
         model.BasicPublish(receiveexchange, string.Empty, basicProperties, body);
       };
 
-      continousreader.Error += exception =>
-      {
-        stopevent.Set();
-      };
+      continousreader.Error += exception => { stopevent.Set(); };
 
       continousreader.Start();
+
       #endregion
 
       stopevent.Wait();
